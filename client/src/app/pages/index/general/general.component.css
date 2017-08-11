@@ -1,0 +1,29 @@
+.container-col{
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: flex-start;   
+}
+.container-row{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    
+}
+.container-item{
+   flex-flow: 1;
+   align-self: auto;
+   width:100%;
+}
+.oneth{
+    width: 20%;
+}
+.twoth{
+    width: 50%;  
+}
+.threeth{
+    width: 30%;   
+}

@@ -1,0 +1,32 @@
+.dashboard{    
+    display: flex;
+    flex-direction: column;
+}
+
+.top-container{
+   display: flex;
+   flex-direction: row;
+   flex-wrap: nowrap;
+   justify-content: space-between;
+}
+.top-item{
+    align-self: center;
+}
+.body-container{
+   display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-content: flex-start;
+}
+.body-item{
+    align-self: auto;
+    flex-grow: 1;
+    flex-shrink: 1;  
+}
+.side-bar{    
+    width: 20%;    
+}
+.main-bar{    
+    width: 75%;
+}

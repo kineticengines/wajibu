@@ -1,0 +1,17 @@
+ul {
+    list-style: none;
+}
+a {
+    text-decoration: none;
+    color: #818181;
+    letter-spacing: 1px;
+}
+.Sidebar-navItem {
+    padding-left: 17px;
+    transition: padding-left 0.4s ease;
+    margin-bottom: 20px;
+}
+.active{  
+  color: teal !important;  
+  font-weight: bolder;
+}

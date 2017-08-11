@@ -1,0 +1,154 @@
+/*
+Wajibu is an online web app that collects,analyses, aggregates and visualizes sentiments
+from the public pertaining the government of a nation. This tool allows citizens to contribute
+to the governance talk by airing out their honest views about the state of the nation and in
+particular the people placed in government or leadership positions.
+
+Copyright (C) 2017
+David 'Dexter' Mwangi
+dmwangimail@gmail.com
+https://github.com/daviddexter
+https://github.com/daviddexter/wajibu
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+.logout-container{   
+    float: right;
+}
+#crouton ul {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    width: 100%;
+    list-style: none;
+}
+
+#crouton li {
+    float: left;
+    margin: 0 10px;
+}
+
+#crouton a {
+    background: teal;
+  padding: .7em 1em;
+  float: left;
+  text-decoration: none;
+  color: white;  
+  position: relative;
+}
+
+#crouton li a {
+    border-top-left-radius: 35px;
+    border-top-right-radius: 35px;
+    border-bottom-left-radius: 35px;
+    border-bottom-right-radius: 35px;
+}
+
+#crouton li:last-child a {
+    border-top-right-radius: 35px;
+    border-bottom-right-radius: 35px;
+}
+
+#crouton a:hover {
+    background: #ffab00;
+}
+.active{
+  color: white !important; 
+  background: #ffab00 !important;  
+}
+
+.general-form{
+    width:70%;
+    display: inline-block;
+}
+.general-form-input{
+    width: 100%;    
+}
+.the-input{
+    color: teal;
+    font-weight: bold;
+    text-transform: capitalize !important;
+}
+
+.the-input-extra{
+    color: teal;
+    font-weight: bold;
+    text-transform: lowercase !important;
+}
+
+.the-label{
+   color: teal;
+   font-weight: bold; 
+   margin:10px;
+}
+.house-container{
+    display: flex;
+    flex-direction: row;    
+    justify-content: space-around;
+    align-items: center;
+    align-content: space-around;
+}
+.house-item{
+    flex-grow: 1;
+    align-self: center;
+}
+.detail-header{
+    color:teal;
+}
+.remove-button{
+    background-color: darkred;
+    color: white;
+}
+
+.save-button{
+    background-color: teal;
+    color: white;
+}
+
+table {
+    width: 100%;
+}
+thead{
+    background-color: teal;
+}
+th {
+    height: 50px;
+    text-align: center;
+    color:white;
+}
+
+.deploy-section > span{
+    font-size: 12px;
+}
+
+.deploy-button{
+    width: 60%;
+    padding-top: 1%;
+    padding-bottom: 1%;
+    letter-spacing:0.1em;
+    font-size: 18px;
+    text-align: center;
+    border-radius: 35px;
+    background-color: teal;
+    outline-width: 0em;
+    outline-color: transparent;
+    border-color:transparent;
+    color: white;
+    cursor: pointer;    
+}
+
+.deploy-button:active{
+    border-color: white;
+}
+

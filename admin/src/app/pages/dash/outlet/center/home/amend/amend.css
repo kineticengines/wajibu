@@ -1,0 +1,42 @@
+.container,.pillars-container{
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-content: flex-start;
+}
+
+.item,.pillars-item{
+    align-self: auto;
+    flex-grow: 1;
+    flex-shrink: 1;  
+}
+
+.general-form{
+    width:100%;
+    display: inline-block;    
+}
+.general-form-input{
+    width: 100%;    
+}
+.the-input{
+    color: teal;
+    font-weight: bold;
+    text-transform: capitalize !important;
+}
+
+.save-button{
+    background-color: teal;
+    color: white;
+}
+
+.all-pillars-container{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-content: flex-start;
+}
+.all-pillars-container-item{
+    margin: 10px;
+}

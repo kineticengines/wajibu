@@ -1,0 +1,8 @@
+.top-radio-group{
+    display: inline-flex;
+    flex-direction: row;
+}
+.top-radio-group-item{
+    margin: 20px;
+}
+

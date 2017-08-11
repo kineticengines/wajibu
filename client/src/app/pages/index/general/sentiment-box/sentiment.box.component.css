@@ -1,0 +1,22 @@
+.container{
+   display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: flex-start;
+    width: 96%;    
+}
+.container-item{
+    flex-grow: 1;
+    align-items: auto;    
+}
+
+.sentiment-box{
+     margin: 5px;
+    border-width: 2px;
+    border-style: solid;
+    border-color: #f5f5f5;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    padding: 5px;    
+}

@@ -1,0 +1,57 @@
+/*
+	Wajibu is an online web app that collects,analyses and aggregates sentiments from the public
+	pertaining the government of a nation. This tools allows citizens to contribute to the
+	governance talk by airing out their honest views about the state of the nation and in
+	particular the people placed in government or leaderssip positions.
+
+    Copyright (C) 2017
+	David 'Dexter' Mwangi
+	dmwangimail@gmail.com
+	https://github.com/daviddexter
+	https://github.com/daviddexter/wajibu
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+
+@import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
+/*@import url('https://fonts.googleapis.com/css?family=Dosis');*/
+
+@font-face {
+    font-family: "Dosis";
+    src: url('assets/dosis/Dosis-Medium.ttf') format('truetype')
+         
+}
+
+body{
+    font-family: 'Dosis', sans-serif;
+}
+
+
+body::-webkit-scrollbar-track
+{
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+	background-color: #F5F5F5;
+}
+
+body::-webkit-scrollbar
+{
+	width: 6px;
+	background-color: #F5F5F5;
+}
+
+body::-webkit-scrollbar-thumb
+{
+	background-color: teal;
+}

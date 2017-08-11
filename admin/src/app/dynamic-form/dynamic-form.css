@@ -1,0 +1,14 @@
+.general-form-input{
+    width: 100%;    
+}
+
+.the-input{
+    color: teal;
+    font-weight: bold;
+    text-transform: capitalize !important;
+}
+
+.save-button{
+    background-color: teal;
+    color: white;
+}
