@@ -30,6 +30,7 @@ import { IndexCompenent } from "./pages/index/index.component";
 import { GeneralComponent} from "./pages/index/general/general.component"
 import { ChartBoxComponent } from "./pages/index/general/chart-box/chart.box.component";
 import { FilterBoxComponent } from "./pages/index/general/filter-box/filter.box.component";
+import { InfoBoxComponent } from "./pages/index/general/info-box/info.box.component";
 import { SentimentBoxComponent } from "./pages/index/general/sentiment-box/sentiment.box.component";
 import { TopBoxComponent } from "./pages/index/general/top-box/top.box.component";
 import { FilterComponent } from "./pages/index/filter/filter.component";
@@ -54,6 +55,10 @@ export const routing = RouterModule.forRoot(routes);
 export const ServerURL:string = 'http://localhost:5678'
 
 export const appComponents = [
-    RootComponent,IndexCompenent,GeneralComponent,ChartBoxComponent,FilterBoxComponent,SentimentBoxComponent,
-    TopBoxComponent,FilterComponent,NotFoundComponent
+    RootComponent,IndexCompenent,GeneralComponent,ChartBoxComponent,FilterBoxComponent,InfoBoxComponent,
+    SentimentBoxComponent,TopBoxComponent,FilterComponent,NotFoundComponent
+]
+
+export const appPipes = [
+    
 ]

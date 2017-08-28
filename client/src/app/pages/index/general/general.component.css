@@ -1,29 +1,31 @@
 .container-col{
     display: flex;
     flex-direction: column;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     justify-content: flex-start;
     align-items: flex-start;   
 }
 .container-row{
     display: flex;
     flex-direction: row;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     justify-content: space-between;
     align-items: flex-start;
-    
+    width: 100%;
 }
 .container-item{
-   flex-flow: 1;
-   align-self: auto;
-   width:100%;
+   flex-basis: auto;   
+   align-self: stretch;  
 }
 .oneth{
-    width: 20%;
+    flex-grow: 1;
+    flex-basis: 20%; 
 }
 .twoth{
-    width: 50%;  
+    flex-grow: 4;
+     flex-basis: 50%; 
 }
 .threeth{
-    width: 30%;   
+    flex-grow: 3;
+    flex-basis: 30%;
 }

@@ -73,6 +73,8 @@ func worker(r chan bool) {
 		case true:
 			sentimentsTableExist = true
 		case false:
+			removeSentimentsHash()
+			removeSentimentsZSet()
 			sentimentsTableExist = false
 		}
 	}()
@@ -87,21 +89,46 @@ func worker(r chan bool) {
 
 func workerCache() *bool {
 	//get the sentiment:field
+	var r bool
 	fields, err := radix.RDB.Cmd("SMEMBERS", radix.SENTIMENT).List()
 	report.ErrLogger(err)
 	s := *dbase.GetCurrentSentiments(fields)
+	//log.Println(s)
 	var counter int
-	var r bool
-	for k, val := range s {
-		key := radix.SENTIMENT_KEY_PREFIX + ":" + strconv.Itoa(k)
-		err = radix.RDB.Cmd("HMSET", key, "api", val.Key, "date", val.Date, val.Fields).Err
-		if err == nil {
-			counter++
+	if len(s) >= 1 {
+		removeSentimentsHash()
+		removeSentimentsZSet()
+		for k, val := range s {
+			//PROCESS NEW SENTIMENTS
+			index := k + 1
+			key := radix.SENTIMENT_KEY_PREFIX + ":" + strconv.Itoa(index)
+			err = radix.RDB.Cmd("HMSET", key, "api", val.Key, "date", val.Date, "image", val.Image, val.Fields).Err
+			if err == nil {
+				err = radix.RDB.Cmd("ZADD", radix.SENTIMENT_LIST, "NX", k, key).Err
+				if err == nil {
+					counter++
+				}
+			}
 		}
-	}
-
-	if len(s) == counter {
+		if len(s) == counter {
+			r = true
+		}
+	} else {
 		r = true
 	}
 	return &r
+}
+
+func removeSentimentsHash() {
+	//get current sentiment hash a delete them
+	s, err := radix.RDB.Cmd("KEYS", radix.SENTIMENT_KEY_PREFIX+":*").List()
+	report.ErrLogger(err)
+	for _, sen := range s {
+		_ = radix.RDB.Cmd("DEL", sen).Err
+	}
+}
+
+func removeSentimentsZSet() {
+	//delete zset key
+	_ = radix.RDB.Cmd("DEL", radix.SENTIMENT_LIST).Err
 }

@@ -24,41 +24,20 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package main
+package radix
 
 import (
-	"fmt"
-	"net/http"
-	_ "net/http/pprof"
-
-	cfg "github.com/daviddexter/wajibu/configure"
-	"github.com/daviddexter/wajibu/server/dbase"
-	"github.com/daviddexter/wajibu/server/radix"
-	"github.com/daviddexter/wajibu/server/routes"
-	"github.com/gorilla/mux"
-	"github.com/rs/cors"
+	"github.com/daviddexter/wajibu/report"
 )
 
-var licenseNote string = `Wajibu  Copyright (C) 2017  David 'Dexter' Mwangi.
-This program comes with ABSOLUTELY NO WARRANTY;This is free software, and you are welcome to redistribute it under certain conditions.`
-
-func init() {
-	dbase.ConnectToDB()
-	radix.ConnectToRDB()
-	radix.ConfigDefaulter()
-}
-
-func main() {
-	router := mux.NewRouter()
-	for _, v := range routes.Routes {
-		router.HandleFunc(v.Path, v.Handler).Methods(v.Method)
+func GetCachedSentiments() *[]map[string]string {
+	var s []map[string]string
+	res, err := RDB.Cmd("ZREVRANGE", SENTIMENT_LIST, "0", "-1").List()
+	report.ErrLogger(err)
+	for _, val := range res {
+		res, err := RDB.Cmd("HGETALL", val).Map()
+		report.ErrLogger(err)
+		s = append(s, res)
 	}
-	serve := &http.Server{
-		Addr:    cfg.Loader().Serverport,
-		Handler: cors.Default().Handler(router),
-	}
-
-	fmt.Println(licenseNote)
-	//go bg.StartBG()
-	serve.ListenAndServe()
+	return &s
 }

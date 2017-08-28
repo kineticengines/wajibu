@@ -1,16 +1,11 @@
 .container{
    display: flex;
     flex-direction: column;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     justify-content: flex-start;
     align-items: flex-start;
-    width: 96%;    
+     
 }
-.container-item{
-    flex-grow: 1;
-    align-items: auto;    
-}
-
 .sentiment-box{
      margin: 5px;
     border-width: 2px;
@@ -18,5 +13,114 @@
     border-color: #f5f5f5;
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
-    padding: 5px;    
+    padding: 5px;   
 }
+
+.container-item{
+    flex-grow: 1;
+    align-self: stretch;  
+}
+
+.sentiment-container-box{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start; 
+   align-content: flex-start;
+   
+}
+
+.sentiment-container-box-item{
+    flex-grow: 1;
+    align-self: stretch; 
+}
+
+.sentiment-container{
+   border: 2px solid #f5f5f5;   
+    margin: 5px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start; 
+    align-content: flex-start; 
+    border-radius: 5px;
+    padding: 5px; 
+    background-color: honeydew;  
+}
+
+@media only screen and (max-width: 640px){
+   .sentiment-container{
+     flex-wrap: wrap;
+   } 
+}
+
+.sentiment-container-item{
+    align-self: auto;
+    margin:10px;
+}
+
+.sentiment-side-items{
+   display: flex;
+   flex-direction: column;
+   flex-wrap: wrap;
+   justify-content: space-around;
+   align-items: flex-start;   
+}
+
+.sentiment-side-items-item{
+    align-self: auto;
+}
+.sentiment-side-items-item-content{
+    letter-spacing: 1px;
+    text-align: justify;
+}
+.sentiment-side-items-item-header,.sentiment-side-items-item-content,.sentiment-side-items-item-footer{
+   display: flex;
+   flex-direction: row;
+   flex-wrap: wrap;
+   justify-content: space-around;
+   align-items: center; 
+}
+
+.sentiment-side-items-item-header-item,.sentiment-side-items-item-content-item,.sentiment-side-items-item-footer-item{
+   align-self: auto;  
+   margin:5px;  
+}
+
+.sentiment-container-box{  
+  max-height: 510px;
+    overflow-y: auto;    
+}
+
+/*.sentiment-container-box:hover{
+    overflow-y: scroll;
+}*/
+
+.sentiment-container-box::-webkit-scrollbar-track
+{
+	-webkit-box-shadow: inset 0 0 5px rgba(0,0,0,0.3);
+    background-color: #F5F5F5;   
+}
+
+.sentiment-container-box::-webkit-scrollbar
+{
+	width: 5px;
+    background-color: #F5F5F5;
+    
+}
+
+.sentiment-container-box::-webkit-scrollbar-thumb
+{
+	background-color: gray;
+}
+
+.pillar-for{
+    width: 80px;
+    height: 80px;
+    background-color: #fff;
+    border: 1px solid #777;
+    border-radius: 0.5em;
+    box-shadow: 1em 1em .5em -.5em rgba(0, 0, 0, 0.1);
+    object-fit: cover;
+}
+

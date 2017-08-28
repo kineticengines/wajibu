@@ -381,7 +381,7 @@ func UpdateConfig(w http.ResponseWriter, r *http.Request) {
 /******************************************************************/
 
 func FetchTitles(w http.ResponseWriter, r *http.Request) {
-	p := *allTitles()
+	p := *radix.AllTitles()
 	res, err := json.Marshal(struct {
 		Titles []string `json:"titles"`
 	}{Titles: p})
@@ -391,8 +391,15 @@ func FetchTitles(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func allTitles() *[]string {
-	return radix.AllTitles()
+func FetchHouses(w http.ResponseWriter, r *http.Request) {
+	p := *radix.AllHouses()
+	res, err := json.Marshal(struct {
+		Houses []string `json:"houses"`
+	}{Houses: p})
+	report.ErrLogger(err)
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(res)
+	return
 }
 
 /******************************************************************/

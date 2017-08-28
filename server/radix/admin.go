@@ -58,6 +58,30 @@ func AllTitles() *[]string {
 	return &rAll
 }
 
+func AllHouses() *[]string {
+	var rAll []string
+	res, err := RDB.Cmd("EXISTS", HOUSES).Int()
+	report.ErrLogger(err)
+	switch res {
+	case 0:
+		//does not exist in redis
+		p := *dbase.GetHousesFromDB()
+		if p.Error == nil {
+			for _, v := range p.House {
+				rAll = append(rAll, v)
+			}
+		}
+	case 1:
+		//get data from redis : smembers
+		res, err := RDB.Cmd("SMEMBERS", HOUSES).List()
+		report.ErrLogger(err)
+		for _, v := range res {
+			rAll = append(rAll, v)
+		}
+	}
+	return &rAll
+}
+
 func AllPillars() (*[]types.Pillar, error) {
 	var rAll []types.Pillar
 	var pillarErr error

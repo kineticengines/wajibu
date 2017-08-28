@@ -58,8 +58,7 @@ export class DashService{
                 .get(`${ServerURL}/api/dash/dpresident/level/configure`)
                 .catch(err => Observable.throw(err))
                 .map(this.extractData) 
-    }
-
+    }   
     houseLevelConfigure(){
         return this.http
                 .get(`${ServerURL}/api/dash/house/level/configure`)
@@ -79,6 +78,12 @@ export class DashService{
                 .get(`${ServerURL}/api/dash/fetch/pillars`)
                 .catch(err => Observable.throw(err))
                 .map(this.extractData)  
+    }
+
+    fetchHouses(){        
+        return this.http
+                .get(`${ServerURL}/api/dash/fetch/houses`)
+                .map(this.extractData) 
     }
 
     savePillar(obj:Object){
@@ -104,4 +109,17 @@ export class DashService{
                 .map(this.extractData)  
     }
     
+    getRepSlotsForHouse(obj:Object){
+       let OBJ = JSON.stringify(obj)        
+       return this.http.post(`${ServerURL}/api/dash/sentiment/get/house/reps`,OBJ,this.options)
+                .catch(err => Observable.throw(err))
+                .map(this.extractData)
+    }
+
+    configureHouseLevel(obj:Object){
+        let OBJ = JSON.stringify(obj)        
+        return this.http.post(`${ServerURL}/api/dash/house/level/configure`,OBJ,this.options)
+                .catch(err => Observable.throw(err))
+                .map(this.extractData)
+    }
 }

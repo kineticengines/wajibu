@@ -144,6 +144,11 @@ var Routes = routes{
 		Handler: chck.FetchTitles,
 	},
 	route{
+		Path:    "/api/dash/fetch/houses",
+		Method:  "GET",
+		Handler: chck.FetchHouses,
+	},
+	route{
 		Path:    "/api/dash/fetch/pillars",
 		Method:  "GET",
 		Handler: admin.FetchPillars,
@@ -169,11 +174,6 @@ var Routes = routes{
 		Handler: admin.DPresidentLevelCongfigure,
 	},
 	route{
-		Path:    "/api/dash/house/level/configure",
-		Method:  "GET",
-		Handler: admin.HouseLevelCongfigure,
-	},
-	route{
 		Path:    "/api/init/get/titles",
 		Method:  "GET",
 		Handler: chck.FetchTitles,
@@ -184,8 +184,18 @@ var Routes = routes{
 		Handler: admin.AddSentiment,
 	},
 	route{
-		Path: "/api/init/get/seintiments",
-		Method: "	GET",
+		Path:    "/api/init/get/seintiments",
+		Method:  "GET",
 		Handler: clients.FetchCurrentSentiments,
+	},
+	route{
+		Path:    "/api/dash/sentiment/get/house/reps",
+		Method:  "POST",
+		Handler: admin.GetHouseRepSlots,
+	},
+	route{
+		Path:    "/api/dash/house/level/configure",
+		Method:  "POST",
+		Handler: admin.HouseLevelConfigure,
 	},
 }

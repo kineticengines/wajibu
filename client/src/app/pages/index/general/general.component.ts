@@ -1,8 +1,8 @@
 import { Component } from "@angular/core"
-import { ChartBoxComponent } from "./chart-box/chart.box.component";
+/*import { ChartBoxComponent } from "./chart-box/chart.box.component";
 import { FilterBoxComponent } from "./filter-box/filter.box.component";
 import { SentimentBoxComponent } from "./sentiment-box/sentiment.box.component";
-import { TopBoxComponent } from "./top-box/top.box.component";
+import { TopBoxComponent } from "./top-box/top.box.component";*/
 
 
 @Component({
@@ -15,9 +15,16 @@ import { TopBoxComponent } from "./top-box/top.box.component";
            </div>
            <div class="container-item">
                 <div class="container-row">
-                    <filter-box class="container-item oneth"></filter-box>
-                    <sentiment-box class="container-item twoth"></sentiment-box>
-                    <chart-box class="container-item threeth"></chart-box>
+                    <div class="container-item oneth">
+                        <filter-box ></filter-box>
+                        <info-box></info-box>                         
+                    </div>
+                    <div class="container-item twoth">
+                        <sentiment-box></sentiment-box>                        
+                    </div>
+                    <div class="container-item threeth">
+                        <chart-box></chart-box>
+                    </div>             
                 </div>
            </div> 
         </div>

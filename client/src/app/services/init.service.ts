@@ -30,9 +30,13 @@ import { Http,Response } from "@angular/http"
 
 import { ServerURL } from "../app.routing"
 import { Observable} from "rxjs/Rx";
+import "rxjs/Rx";
+
 @Injectable()
 export class Initializer{    
     constructor(private http:Http){}
+
+    
     getInit(){
         return this.http
                 .get(`${ServerURL}/api/check/init`)
@@ -70,12 +74,22 @@ export class Initializer{
         return this.http
                 .get(`${ServerURL}/api/init/get/titles`)
                 .map(this.extractData)   
-    }
+    }    
 
-    getSentiments(){
-        return this.http
-                .get(`${ServerURL}/api/init/get/seintiments`)
-                .map(this.extractData)   
+    getSentiments(){       
+        return Observable.interval(1000)
+                         .startWith(0)
+                         .switchMap(() => 
+                            this.http
+                                .get(`${ServerURL}/api/init/get/seintiments`)            
+                                .map((res: Response) => {
+                                    let body = res.json();
+                                    return body.all.reverse()
+                                })
+                                ._catch(e => Observable.of(e))                                  
+                         )                   
+                         //.catch(e => Observable.of(e))
+                                          
     }
 }
 

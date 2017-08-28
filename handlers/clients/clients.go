@@ -27,10 +27,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package clients
 
 import (
+	"encoding/json"
 	"net/http"
-	//"github.com/daviddexter/wajibu/server/dbase"
+
+	"github.com/daviddexter/wajibu/report"
+	"github.com/daviddexter/wajibu/server/radix"
 )
 
 func FetchCurrentSentiments(w http.ResponseWriter, r *http.Request) {
-	//dbase.GetCurrentSentiments()
+	n := radix.GetCachedSentiments()
+	res, err := json.Marshal(struct {
+		All []map[string]string `json:"all"`
+	}{All: *n})
+	report.ErrLogger(err)
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(res)
+	return
 }

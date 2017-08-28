@@ -8,7 +8,7 @@ import { FieldConfig } from '../../models/field-config.interface';
   selector: 'dynamic-form',
    styleUrls: ['../../dynamic-form.css'],
   template: `
-    <form novalidate class="general-form" [formGroup]="form" (submit)="handleSubmit($event,forWho.label)">
+    <form novalidate class="general-form" [formGroup]="form" (submit)="handleSubmit($event,forWho.label,image.label)">
       <ng-container *ngFor="let field of config;" dynamicField [config]="field" [group]="form">
       </ng-container>
     </form>
@@ -25,7 +25,8 @@ export class DynamicFormComponent implements OnChanges, OnInit {
   get changes() { return this.form.valueChanges; }
   get valid() { return this.form.valid; }
   get value() { return this.form.value; }
-  get forWho() { return this.config.find(n => n.type === "text")}
+  get forWho() { return this.config.find(n => n.name === "api")}
+  get image() { return this.config.find(n => n.name === "image")}
 
   constructor(private fb: FormBuilder) {}
 
@@ -63,11 +64,12 @@ export class DynamicFormComponent implements OnChanges, OnInit {
     return this.fb.control({ disabled, value }, validation);
   }
 
-  handleSubmit(event: Event,who: string) {
+  handleSubmit(event: Event,who: string,image:string) {
     event.preventDefault();
-    event.stopPropagation();
+    event.stopPropagation();    
     let data = new SubmitData()
     data.forwho = who
+    data.image = image
     data.thedata = this.value
     this.submit.emit(data);    
   }
@@ -94,5 +96,6 @@ export class DynamicFormComponent implements OnChanges, OnInit {
 
 class SubmitData{
   forwho:string
+  image:string
   thedata:any
 }

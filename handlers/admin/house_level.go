@@ -32,30 +32,57 @@ import (
 	"github.com/daviddexter/wajibu/server/dbase"
 )
 
-func presidentLevelConfigurer() *types.ConfigAll {
+func getHouseLevelRepSlots(d struct{ HouseName string }) *types.GetHouseSlotsData {
 	var wg sync.WaitGroup
-	wg.Add(3)
+	var rAll types.GetHouseSlotsData
+	wg.Add(2)
+	go func(house string) {
+		//get slotnames from db
+		defer wg.Done()
+		rAll.Slots = *dbase.GetRepSlotsForHouse(house)
+	}(d.HouseName)
+	go func(house string) {
+		//get slot designation from db
+		defer wg.Done()
+		rAll.Designation = *dbase.GetRepSlotsForHouseDesignation(house)
+	}(d.HouseName)
+	wg.Wait()
+	return &rAll
+}
+
+func houseLevelConfigurer(h struct {
+	Designation string
+	Type        string
+	Data        struct {
+		SlotName string
+	}
+}) *types.ConfigAll {
+	var wg sync.WaitGroup
 	var pillarsOptions []string
-	var repSlots map[string][]string
+	var repSlots map[string]string
 	var api string
+	var image string
+	wg.Add(3)
 	go func() {
 		//get pillars
 		defer wg.Done()
-		p := *dbase.GetPillarsFor("president")
+		p := *dbase.GetPillarsFor(h)
 		for i := range p {
 			pillarsOptions = append(pillarsOptions, p[i])
 		}
 	}()
-
 	go func() {
 		//get locations => same as represeneted slot
 		defer wg.Done()
-		repSlots = *dbase.GetRepSlots()
+		s := make(map[string]string)
+		s[h.Designation] = h.Data.SlotName
+		repSlots = s
 	}()
-
 	go func() {
 		defer wg.Done()
-		api = *dbase.GetAPIofForTopLevel("president")
+		m := *dbase.GetAPIofForLevelAndImage(h)
+		api = m["api"]
+		image = m["image"]
 	}()
 	wg.Wait()
 
@@ -63,8 +90,15 @@ func presidentLevelConfigurer() *types.ConfigAll {
 
 	var ForWho types.FormConfig // who does the sentiment belong to
 	ForWho.Type = "text"
+	ForWho.Name = "api"
 	ForWho.Label = api
 	Configuration.Config = append(Configuration.Config, ForWho)
+
+	var Image types.FormConfig // who does the sentiment belong to image
+	Image.Type = "text"
+	Image.Name = "image"
+	Image.Label = image
+	Configuration.Config = append(Configuration.Config, Image)
 
 	var PillarsConfig types.FormConfig //pillars
 	PillarsConfig.Type = "select"
@@ -83,12 +117,11 @@ func presidentLevelConfigurer() *types.ConfigAll {
 
 	for k, v := range repSlots {
 		var Slot types.FormConfig
-		Slot.Type = "select"
+		Slot.Type = "inputdefault"
 		Slot.Name = k
-		for i := range v {
-			Slot.Options = append(Slot.Options, v[i])
-		}
 		Slot.Placeholder = "respondent " + " " + k
+		Slot.Value = v
+		Slot.Disabled = true
 		Configuration.Config = append(Configuration.Config, Slot)
 	}
 
@@ -99,79 +132,5 @@ func presidentLevelConfigurer() *types.ConfigAll {
 	Configuration.Config = append(Configuration.Config, ButtonConfig)
 
 	return &Configuration
-
-}
-
-func dpresidentLevelConfigurer() *types.ConfigAll {
-	var wg sync.WaitGroup
-	wg.Add(3)
-	var pillarsOptions []string
-	var repSlots map[string][]string
-	var api string
-	go func() {
-		//get pillars
-		defer wg.Done()
-		p := *dbase.GetPillarsFor("deputy president")
-		for i := range p {
-			pillarsOptions = append(pillarsOptions, p[i])
-		}
-	}()
-
-	go func() {
-		//get locations => same as represeneted slot
-		defer wg.Done()
-		repSlots = *dbase.GetRepSlots()
-	}()
-
-	go func() {
-		defer wg.Done()
-		api = *dbase.GetAPIofForTopLevel("deputy president")
-	}()
-	wg.Wait()
-
-	var Configuration types.ConfigAll //all configurations
-
-	var ForWho types.FormConfig // who does the sentiment belong to
-	ForWho.Type = "text"
-	ForWho.Label = api
-	Configuration.Config = append(Configuration.Config, ForWho)
-
-	var PillarsConfig types.FormConfig //pillars
-	PillarsConfig.Type = "select"
-	PillarsConfig.Name = "pillars"
-	for i := range pillarsOptions {
-		PillarsConfig.Options = append(PillarsConfig.Options, pillarsOptions[i])
-	}
-	PillarsConfig.Placeholder = "pillars"
-	Configuration.Config = append(Configuration.Config, PillarsConfig)
-
-	var SentimentConfig types.FormConfig
-	SentimentConfig.Type = "input"
-	SentimentConfig.Name = "sentiment"
-	SentimentConfig.Placeholder = "respondent sentiment"
-	Configuration.Config = append(Configuration.Config, SentimentConfig)
-
-	for k, v := range repSlots {
-		var Slot types.FormConfig
-		Slot.Type = "select"
-		Slot.Name = k
-		for i := range v {
-			Slot.Options = append(Slot.Options, v[i])
-		}
-		Slot.Placeholder = "respondent " + " " + k
-		Configuration.Config = append(Configuration.Config, Slot)
-	}
-
-	var ButtonConfig types.FormConfig
-	ButtonConfig.Type = "button"
-	ButtonConfig.Name = "submit"
-	ButtonConfig.Label = "SUBMIT"
-	Configuration.Config = append(Configuration.Config, ButtonConfig)
-
-	return &Configuration
-
-}
-
-func houseLevelCongfigure() {
 
 }

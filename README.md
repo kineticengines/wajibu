@@ -3,10 +3,10 @@
 ## Governance sentiment analysis and aggregator
 
 ### What is Wajibu?
-Wajibu is an online web app that collects,analyses, aggregates and visualizes sentiments
-from the public pertaining the government of a nation. This tool allows citizens to contribute
-to the governance talk by airing out their honest views about the state of the nation and in
-particular the people placed in government or leadership positions.
+Wajibu is an online tool that collects and agggerates sentiments from the
+public regarding the governance of a nation in an effort to provide a 
+statistical analysis on the kind of leaders a country has and how such 
+leaders contribute to political,economical and social development of a nation.
 
 Three keys concepts resonants with good leadership
 

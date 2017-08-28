@@ -180,12 +180,19 @@ type TitleData struct {
 	Title []string
 }
 
+type HouseData struct {
+	Error error
+	House []string
+}
+
 type FormConfig struct {
 	Type        string        `json:"type"`
 	Name        string        `json:"name"`
 	Label       string        `json:"label"`
 	Options     []interface{} `json:"options,omitempty"`
 	Placeholder string        `json:"placeholder"`
+	Value       string        `json:"value"`
+	Disabled    bool          `json:"disabled"`
 	//Validation  func()        `json:"validation"`
 }
 
@@ -194,12 +201,19 @@ type ConfigAll struct {
 }
 
 type NewSentiment struct {
-	API  string
-	Data map[string]interface{}
+	API   string
+	Image string
+	Data  map[string]interface{}
 }
 
 type SentimentRow struct {
 	Key    string
 	Date   string
+	Image  string
 	Fields []map[string]string
+}
+
+type GetHouseSlotsData struct {
+	Designation string   `json:"designation"`
+	Slots       []string `json:"slots"`
 }

@@ -13,6 +13,12 @@ import { trigger, style,animate,transition,keyframes} from "@angular/animations"
                     <input type="search" mdInput placeholder="Search Wajibu">
                 </md-input-container>                
             </div>
+            <div class="container-item">
+                <div class="container-item-social">
+                    <a href="https://facebook.com" target="_blank" class="container-item-social-item link">Facebook</a>
+                    <a href="https://twitter.com" target="_blank" class="container-item-social-item link">Twitter</a>
+                </div>                
+            </div>
         </div>
         
     `,

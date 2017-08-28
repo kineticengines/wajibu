@@ -1,7 +1,7 @@
 .container{
     display: flex;
     flex-direction: row;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     justify-content: flex-end;
     align-items: flex-start;    
 }
@@ -11,5 +11,21 @@
 }
 .search{
     width: 100%;
+}
+
+.container-item-social{
+   display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    align-items: flex-end;  
+}
+.container-item-social-item{
+    margin-left: 10px;
+}
+.link{
+    text-decoration: none;
+    color: teal;
+    letter-spacing: 0.5px;    
 }
 

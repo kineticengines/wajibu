@@ -112,6 +112,32 @@ func DPresidentLevelCongfigure(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func HouseLevelCongfigure(w http.ResponseWriter, r *http.Request) {
-	//d := houseLevelCongfigure()
+func GetHouseRepSlots(w http.ResponseWriter, r *http.Request) {
+	var data struct{ HouseName string }
+	err := json.NewDecoder(r.Body).Decode(&data)
+	report.ErrLogger(err)
+	d := getHouseLevelRepSlots(data)
+	res, err := json.Marshal(d)
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(res)
+	return
+}
+
+func HouseLevelConfigure(w http.ResponseWriter, r *http.Request) {
+	var data struct {
+		Designation string
+		Type        string
+		Data        struct {
+			SlotName string
+		}
+	}
+	err := json.NewDecoder(r.Body).Decode(&data)
+	report.ErrLogger(err)
+	d := houseLevelConfigurer(data)
+	res, err := json.Marshal(struct {
+		Config types.ConfigAll `json:"config"`
+	}{Config: *d})
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(res)
+	return
 }

@@ -15,7 +15,8 @@ import { Initializer } from "../../../../services/init.service";
                     <li><a 	[routerLink]="['../home/fan/',title]">{{title | titlecase}}</a></li>                    
                 </ul>
             <div>
-        </div>        
+        </div>    
+            
     `,
     styleUrls:["./filter.box.component.css"],
     animations:[

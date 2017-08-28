@@ -4,18 +4,20 @@
     flex-wrap: wrap;
     justify-content: space-between;
     align-content: flex-start;
+    
 }
 .container-item{
     align-self: auto;
     flex-grow: 1;
 }
-.chart-box{
-      margin: 5px;
+.info-box{
+    margin: 2px;
     border-width: 2px;
-    border-style: solid;
-    border-color: #f5f5f5;
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
-    padding: 5px;  
-    max-height: 500px; 
+    border-style: solid;   
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    background-color: #00897b;
+    color: whitesmoke;    
+    padding: 5px; 
+    font-size: 14px;
 }

@@ -5,4 +5,28 @@
 .top-radio-group-item{
     margin: 20px;
 }
+.choose-house-select{
+    width: 30%;    
+}
+.the-input{
+    color: teal;
+    font-weight: bold;
+    text-transform: capitalize !important;
+}
+.configure-house-btn{
+    background-color: #ffab00;
+    color:snow;
+}
 
+.house-level-configure{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-around;
+    align-content: flex-start;
+}
+
+.house-level-configure-item{
+    flex-grow: 1;
+    align-self: stretch;
+}

@@ -33,13 +33,13 @@ import { MaterialModule } from '@angular/material';
 import 'hammerjs';
 
 import { AppComponent } from "./app.component";
-import { appComponents,routing } from "./app.routing";
+import { appComponents,routing,appPipes } from "./app.routing";
 import { AuthGuard } from "./services/auth.guard";
 import { Initializer } from "./services/init.service";
 
 @NgModule({
   declarations: [
-    AppComponent,...appComponents
+    AppComponent,...appComponents,...appPipes
   ],
   imports: [
     BrowserModule,FormsModule,BrowserAnimationsModule,MaterialModule,
