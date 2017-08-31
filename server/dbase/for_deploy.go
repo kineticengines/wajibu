@@ -51,10 +51,10 @@ func AddSlotsFromDeploy(slots []types.Slot) *bool {
 	for _, v := range slots {
 		var errX error
 		var errY error
-		stmt, err := DB.Prepare(`INSERT IGNORE INTO ` + table + ` SET slotname=?,designation=?,
+		stmt, err := DB.Prepare(`INSERT INTO ` + table + ` SET slotname=?,designation=?,
 		createdDate=?`)
 		report.ErrLogger(err)
-		res, errX := stmt.Exec(v.SlotName, v.Designation, time.Now())
+		res, errX := stmt.Exec(v.SlotName, v.Designation, time.Now().String())
 		report.ErrLogger(errX)
 		_, errY = res.LastInsertId()
 		report.ErrLogger(errY)
@@ -82,10 +82,10 @@ func AddTitlesFromDeploy(slots []string) *bool {
 	for _, v := range slots {
 		var errX error
 		var errY error
-		stmt, err := DB.Prepare(`INSERT IGNORE INTO ` + table + ` SET titlename=?,
+		stmt, err := DB.Prepare(`INSERT INTO ` + table + ` SET titlename=?,
 		createdDate=?`)
 		report.ErrLogger(err)
-		res, errX := stmt.Exec(v, time.Now())
+		res, errX := stmt.Exec(v, time.Now().String())
 		report.ErrLogger(errX)
 		_, errY = res.LastInsertId()
 		report.ErrLogger(errY)
@@ -118,6 +118,8 @@ func CreateTopLevelTable() bool {
 	)`)
 	if err == nil {
 		r = true
+	} else {
+		r = false
 	}
 	return r
 }
@@ -127,14 +129,14 @@ func SaveTopLevel(d *[]types.TopPosition, span int) *bool {
 	var r bool
 	for _, v := range *d {
 		table := cfg.Loader().TopLevelTable
-		stmt, err := DB.Prepare(`INSERT IGNORE INTO ` + table + ` SET name=?,position=?,term=?,gender=?,imageurl=?,
+		stmt, err := DB.Prepare(`INSERT INTO ` + table + ` SET name=?,position=?,term=?,gender=?,imageurl=?,
 		nthPosition=?,api=?,termstart=?,termend=?,createdDate=?`)
 		report.ErrLogger(err)
 		termstart := time.Now().Year()
 		n := moment.UtilBuilder{moment.ADDOPERATION, moment.YEARLEAP, 5}
 		termend, err := n.Add(time.Now())
 		report.ErrLogger(err)
-		res, errX := stmt.Exec(v.Name, v.Position, v.Term, v.Gender, v.Image, v.NthPosition, v.API, termstart, termend.Year(), time.Now())
+		res, errX := stmt.Exec(v.Name, v.Position, v.Term, v.Gender, v.Image, v.NthPosition, v.API, termstart, termend.Year(), time.Now().String())
 		report.ErrLogger(errX)
 		_, err = res.LastInsertId()
 		if err == nil {
@@ -172,6 +174,8 @@ func CreateHouseLevelTable() bool {
 	)`)
 	if err == nil {
 		r = true
+	} else {
+		r = false
 	}
 	return r
 }
@@ -181,14 +185,14 @@ func SaveHouseLevel(d *[]types.HousePosition, span int) *bool {
 	var r bool
 	for _, v := range *d {
 		table := cfg.Loader().HouseLevelTable
-		stmt, err := DB.Prepare(`INSERT IGNORE INTO ` + table + ` SET housename=?,title=?,name=?,term=?,gender=?,slotdesignation=?,
+		stmt, err := DB.Prepare(`INSERT INTO ` + table + ` SET housename=?,title=?,name=?,term=?,gender=?,slotdesignation=?,
 		slotname=?,imageurl=?,api=?,termstart=?,termend=?,createdDate=?`)
 		report.ErrLogger(err)
 		termstart := time.Now().Year()
 		n := moment.UtilBuilder{moment.ADDOPERATION, moment.YEARLEAP, 5}
 		termend, err := n.Add(time.Now())
 		report.ErrLogger(err)
-		res, errX := stmt.Exec(v.HouseName, v.Title, v.Name, v.Term, v.Gender, v.SlotDesignation, v.SlotName, v.Image, v.API, termstart, termend, time.Now())
+		res, errX := stmt.Exec(v.HouseName, v.Title, v.Name, v.Term, v.Gender, v.SlotDesignation, v.SlotName, v.Image, v.API, termstart, termend, time.Now().String())
 		report.ErrLogger(errX)
 		_, err = res.LastInsertId()
 		if err == nil {
@@ -225,6 +229,8 @@ func CreateSubGovLevelTable() bool {
 	)`)
 	if err == nil {
 		r = true
+	} else {
+		r = false
 	}
 	return r
 }
@@ -233,15 +239,15 @@ func SaveSubGovLevel(d *[]types.TopPosition, span int) *bool {
 	var done int
 	var r bool
 	for _, v := range *d {
-		table := cfg.Loader().HouseLevelTable
-		stmt, err := DB.Prepare(`INSERT IGNORE INTO ` + table + ` SET name=?,position=?,term=?,gender=?,slotdesignation=?,slotname=?,
+		table := cfg.Loader().SubGovLevelTable
+		stmt, err := DB.Prepare(`INSERT INTO ` + table + ` SET name=?,position=?,term=?,gender=?,slotdesignation=?,slotname=?,
 		nthPosition=?,imageurl=?,api=?,termstart=?,termend=?,createdDate=?`)
 		report.ErrLogger(err)
 		termstart := time.Now().Year()
 		n := moment.UtilBuilder{moment.ADDOPERATION, moment.YEARLEAP, 5}
 		termend, err := n.Add(time.Now())
 		report.ErrLogger(err)
-		res, errX := stmt.Exec(v.Name, v.Position, v.Term, v.Gender, v.SlotDesignation, v.SlotName, v.Image, v.API, termstart, termend, time.Now())
+		res, errX := stmt.Exec(v.Name, v.Position, v.Term, v.Gender, v.SlotDesignation, v.SlotName, v.NthPosition, v.Image, v.API, termstart, termend, time.Now().String())
 		report.ErrLogger(errX)
 		_, err = res.LastInsertId()
 		if err == nil {
@@ -269,6 +275,7 @@ func CreateGrassRootLevelTable() bool {
 		gender VARCHAR(255) NOT NULL,
 		slotdesignation VARCHAR(255) NOT NULL,
 		slotname VARCHAR(255) NOT NULL,
+		legof VARCHAR(255) NOT NULL,
 		nthposition VARCHAR(255) NOT NULL,
 		imageurl VARCHAR(255) NOT NULL,	
 		api VARCHAR(255) NOT NULL,	
@@ -281,6 +288,8 @@ func CreateGrassRootLevelTable() bool {
 
 	if err == nil {
 		r = true
+	} else {
+		r = false
 	}
 	return r
 }
@@ -290,14 +299,14 @@ func SaveGrassRootGovLevel(d *[]types.HousePosition, span int) *bool {
 	var r bool
 	for _, v := range *d {
 		table := cfg.Loader().GrassRootLevelTable
-		stmt, err := DB.Prepare(`INSERT IGNORE INTO ` + table + ` SET housename=?,title=?,name=?,term=?,gender=?,
-		slotdesignation=?,slotname=?,nthPosition=?,imageurl=?,api=?,termstart=?,termend=?,createdDate=?`)
+		stmt, err := DB.Prepare(`INSERT INTO ` + table + ` SET housename=?,title=?,name=?,term=?,gender=?,
+		slotdesignation=?,slotname=?,legof=?,nthPosition=?,imageurl=?,api=?,termstart=?,termend=?,createdDate=?`)
 		report.ErrLogger(err)
 		termstart := time.Now().Year()
 		n := moment.UtilBuilder{moment.ADDOPERATION, moment.YEARLEAP, 5}
 		termend, err := n.Add(time.Now())
 		report.ErrLogger(err)
-		res, errX := stmt.Exec(v.HouseName, v.Title, v.Name, v.Term, v.Gender, v.SlotDesignation, v.SlotName, v.NthPosition, v.Image, v.API, termstart, termend, time.Now())
+		res, errX := stmt.Exec(v.HouseName, v.Title, v.Name, v.Term, v.Gender, v.SlotDesignation, v.SlotName, v.LegOf, v.NthPosition, v.Image, v.API, termstart, termend, time.Now().String())
 		report.ErrLogger(errX)
 		_, err = res.LastInsertId()
 		if err == nil {

@@ -26,11 +26,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package deploy
 
-import "github.com/daviddexter/wajibu/handlers/types"
+import (
+	"github.com/daviddexter/wajibu/handlers/types"
+)
 
 func CheckDeploy() *types.DeployStatus {
 	var s types.DeployStatus
-	k := getInCompleteStepsForCentral(centralBuildKey, DeploySteps)
+	k := getInCompleteSteps(centralBuildKey, DeploySteps)
 	inCompleteCount := len(k)
 	c := DeploySteps - inCompleteCount
 	switch c {

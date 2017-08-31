@@ -47,7 +47,7 @@ export class DashDeploy implements OnInit{
     }
 
     private deploy(){
-        this.init.goStartDeployProcess().subscribe(d => d)        
+        this.init.goStartDeployProcess().subscribe(d => console.log(d))        
     }
     private checkdeploy(){
         this.init.goCheckDeployProcess().subscribe(d =>{  

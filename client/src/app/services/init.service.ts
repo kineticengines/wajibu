@@ -74,7 +74,13 @@ export class Initializer{
         return this.http
                 .get(`${ServerURL}/api/init/get/titles`)
                 .map(this.extractData)   
-    }    
+    }   
+            
+    getPillars(){
+       return this.http
+                .get(`${ServerURL}/api/dash/fetch/pillars`)
+                .map(this.extractData)  
+    }
 
     getSentiments(){       
         return Observable.interval(1000)
@@ -87,8 +93,8 @@ export class Initializer{
                                     return body.all.reverse()
                                 })
                                 ._catch(e => Observable.of(e))                                  
-                         )                   
-                         //.catch(e => Observable.of(e))
+                         )                  
+                         
                                           
     }
 }

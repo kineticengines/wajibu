@@ -141,3 +141,46 @@ func HouseLevelConfigure(w http.ResponseWriter, r *http.Request) {
 	w.Write(res)
 	return
 }
+
+func SubGovLevelConfigure(w http.ResponseWriter, r *http.Request) {
+	var data struct{ GovName string }
+	err := json.NewDecoder(r.Body).Decode(&data)
+	report.ErrLogger(err)
+	d := subGovLevelConfigurer(data)
+	res, err := json.Marshal(struct {
+		Config types.ConfigAll `json:"config"`
+	}{Config: *d})
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(res)
+	return
+}
+
+func GetRootLevelReps(w http.ResponseWriter, r *http.Request) {
+	var data struct{ GovName string }
+	err := json.NewDecoder(r.Body).Decode(&data)
+	report.ErrLogger(err)
+	d := getRootLevelReps(data)
+	res, err := json.Marshal(d)
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(res)
+	return
+}
+
+func RootLevelConfigure(w http.ResponseWriter, r *http.Request) {
+	var data struct {
+		Designation string
+		Type        string
+		Data        struct {
+			SlotName string
+		}
+	}
+	err := json.NewDecoder(r.Body).Decode(&data)
+	report.ErrLogger(err)
+	d := rootLevelConfigurer(data)
+	res, err := json.Marshal(struct {
+		Config types.ConfigAll `json:"config"`
+	}{Config: *d})
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(res)
+	return
+}

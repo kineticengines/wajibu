@@ -57,15 +57,16 @@ func processGrassRootGovLevel() *bool {
 		res, err := radix.RDB.Cmd("HGETALL", mainKey).Map()
 		report.ErrLogger(err)
 		num, _ := strconv.Atoi(res["Numofsubgov"])
-		slotdesignation := res["Subgovname"]
+		slotdesignation := res["Subgovhouserepslot"]
 		housename := res["Subgovhousename"]
 		title := res["Subgovreptitle"]
 		for index := 0; index < num; index++ {
 			govKey := radix.BuildFour + ":gov:" + strconv.Itoa(index)
 			//get the number of leg seats in each sub gov
-			res, err := radix.RDB.Cmd("HGET", govKey, "NumOfLegSeats").Str()
+			res, err := radix.RDB.Cmd("HMGET", govKey, "NumOfLegSeats", "SlotName").List()
 			report.ErrLogger(err)
-			num, _ := strconv.Atoi(res)
+			num, _ := strconv.Atoi(res[0])
+			legOf := res[1]
 			for index := 1; index <= num; index++ {
 				seatKey := govKey + ":" + strconv.Itoa(index)
 				res, err := radix.RDB.Cmd("HGETALL", seatKey).Map()
@@ -83,6 +84,7 @@ func processGrassRootGovLevel() *bool {
 				data.Name = strings.ToLower(b.RepName)
 				data.NthPosition = strings.ToLower(b.RepnthPosition)
 				data.SlotDesignation = strings.ToLower(slotdesignation)
+				data.LegOf = strings.ToLower(legOf)
 				data.SlotName = strings.ToLower(b.SlotName)
 				data.Term = strings.ToLower(b.RepTerm)
 				data.Title = strings.ToLower(title)

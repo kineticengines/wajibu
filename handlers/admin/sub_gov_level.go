@@ -32,31 +32,7 @@ import (
 	"github.com/daviddexter/wajibu/server/dbase"
 )
 
-func getHouseLevelRepSlots(d struct{ HouseName string }) *types.GetHouseSlotsData {
-	var wg sync.WaitGroup
-	var rAll types.GetHouseSlotsData
-	wg.Add(2)
-	go func(house string) {
-		//get slotnames from db
-		defer wg.Done()
-		rAll.Slots = *dbase.GetRepSlotsForHouse(house)
-	}(d.HouseName)
-	go func(house string) {
-		//get slot designation from db
-		defer wg.Done()
-		rAll.Designation = *dbase.GetRepSlotsForHouseDesignation(house)
-	}(d.HouseName)
-	wg.Wait()
-	return &rAll
-}
-
-func houseLevelConfigurer(h struct {
-	Designation string
-	Type        string
-	Data        struct {
-		SlotName string
-	}
-}) *types.ConfigAll {
+func subGovLevelConfigurer(h struct{ GovName string }) *types.ConfigAll {
 	var wg sync.WaitGroup
 	var pillarsOptions []string
 	var repSlots map[string]string
@@ -75,7 +51,8 @@ func houseLevelConfigurer(h struct {
 		//get locations => same as represeneted slot
 		defer wg.Done()
 		s := make(map[string]string)
-		s[h.Designation] = h.Data.SlotName
+		ds := *dbase.GetRepSlotDesignationForSubGov(h.GovName)
+		s[ds] = h.GovName
 		repSlots = s
 	}()
 	go func() {
@@ -131,5 +108,4 @@ func houseLevelConfigurer(h struct {
 	Configuration.Config = append(Configuration.Config, ButtonConfig)
 
 	return &Configuration
-
 }

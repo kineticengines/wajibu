@@ -149,6 +149,11 @@ var Routes = routes{
 		Handler: chck.FetchHouses,
 	},
 	route{
+		Path:    "/api/dash/fetch/subgovs",
+		Method:  "GET",
+		Handler: chck.FetchSubGovs,
+	},
+	route{
 		Path:    "/api/dash/fetch/pillars",
 		Method:  "GET",
 		Handler: admin.FetchPillars,
@@ -197,5 +202,25 @@ var Routes = routes{
 		Path:    "/api/dash/house/level/configure",
 		Method:  "POST",
 		Handler: admin.HouseLevelConfigure,
+	},
+	route{
+		Path:    "/api/dash/check/if/central",
+		Method:  "GET",
+		Handler: chck.CheckIfCentral,
+	},
+	route{
+		Path:    "/api/dash/subgov/level/configure",
+		Method:  "POST",
+		Handler: admin.SubGovLevelConfigure,
+	},
+	route{
+		Path:    "/api/dash/sentiment/get/root/reps",
+		Method:  "POST",
+		Handler: admin.GetRootLevelReps,
+	},
+	route{
+		Path:    "/api/dash/root/level/configure",
+		Method:  "POST",
+		Handler: admin.RootLevelConfigure,
 	},
 }

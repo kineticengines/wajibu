@@ -10,7 +10,7 @@ import { FieldConfig } from '../../models/field-config.interface';
   template: `   
     <div [formGroup]="group">      
       <md-input-container class="general-form-input">
-        <input mdInput [placeholder]="config.placeholder | titlecase"
+        <input mdInput [placeholder]="config.placeholder | titlecase" readonly="true"
          [formControlName]="config.name" type="text" [value]="config.value | titlecase" >
       </md-input-container>
     </div>

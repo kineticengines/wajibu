@@ -44,7 +44,7 @@ func processSubGovLevel() *bool {
 	wg.Add(2)
 	var subgovdata []types.TopPosition
 	go func() {
-		wg.Done()
+		defer wg.Done()
 		c := dbase.CreateSubGovLevelTable()
 		if c != true {
 			e := errors.New("Could not create subgov level table")
@@ -52,7 +52,7 @@ func processSubGovLevel() *bool {
 		}
 	}()
 	go func() {
-		wg.Done()
+		defer wg.Done()
 		//get the number of subgovs,title
 		mainKey := "main:" + radix.BuildOneData
 		res, err := radix.RDB.Cmd("HGETALL", mainKey).Map()

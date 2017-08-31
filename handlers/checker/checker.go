@@ -402,5 +402,26 @@ func FetchHouses(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
+func FetchSubGovs(w http.ResponseWriter, r *http.Request) {
+	p := *radix.AllSubGovs()
+	res, err := json.Marshal(p)
+	report.ErrLogger(err)
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(res)
+	return
+}
+
+func CheckIfCentral(w http.ResponseWriter, r *http.Request) {
+	n := deploy.CheckIfCentralGov()
+	res, err := json.Marshal(struct {
+		IsCentral bool `json:"iscentral"`
+	}{IsCentral: n})
+	report.ErrLogger(err)
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(res)
+	return
+
+}
+
 /******************************************************************/
 /******************************************************************/

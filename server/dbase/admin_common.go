@@ -27,6 +27,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package dbase
 
 import (
+	"log"
+	"sync"
 	"time"
 
 	cfg "github.com/daviddexter/wajibu/configure"
@@ -41,6 +43,7 @@ func GetTitlesFromDB() *types.TitleData {
 	case nil:
 		//get titles
 		rows, err := DB.Query(`SELECT titlename FROM ` + cfg.Loader().TitlesTable)
+		defer rows.Close()
 		if err == nil {
 			for rows.Next() {
 				var title string
@@ -67,6 +70,7 @@ func GetPillarsFromDB() *types.PillarData {
 	case nil:
 		//get pillars
 		rows, err := DB.Query(`SELECT pillar,fortitle FROM ` + cfg.Loader().PillarsTable)
+		defer rows.Close()
 		if err == nil {
 			for rows.Next() {
 				var pillar string
@@ -100,6 +104,7 @@ func GetHousesFromDB() *types.HouseData {
 	case nil:
 		//get houses
 		rows, err := DB.Query(`SELECT DISTINCT(housename) FROM ` + cfg.Loader().HouseLevelTable)
+		defer rows.Close()
 		if err == nil {
 			for rows.Next() {
 				var house string
@@ -119,6 +124,65 @@ func GetHousesFromDB() *types.HouseData {
 	return &r
 }
 
+func GetSubGovsFromDB() *struct {
+	Designation string
+	Data        types.HouseData
+} {
+	var r struct {
+		Designation string
+		Data        types.HouseData
+	}
+	_, err := DB.Exec(`DESCRIBE ` + cfg.Loader().SubGovLevelTable)
+	switch err {
+	case nil:
+		var wg sync.WaitGroup
+		wg.Add(2)
+		go func() {
+			//get designation
+			defer wg.Done()
+			rows, err := DB.Query(`SELECT DISTINCT(slotdesignation) FROM ` + cfg.Loader().SubGovLevelTable)
+			defer rows.Close()
+			if err == nil {
+				for rows.Next() {
+					var d string
+					err = rows.Scan(&d)
+					if err == nil {
+						r.Designation = d
+					} else {
+						r.Data.Error = err
+					}
+
+				}
+			}
+		}()
+
+		go func() {
+			defer wg.Done()
+			//get slotnames
+			rows, err := DB.Query(`SELECT DISTINCT(slotname) FROM ` + cfg.Loader().SubGovLevelTable)
+			defer rows.Close()
+			if err == nil {
+				for rows.Next() {
+					var house string
+					err = rows.Scan(&house)
+					if err == nil {
+						r.Data.House = append(r.Data.House, house)
+					} else {
+						r.Data.Error = err
+					}
+				}
+			} else {
+				r.Data.Error = err
+			}
+		}()
+
+		wg.Wait()
+	default:
+		r.Data.Error = err
+	}
+	return &r
+}
+
 func GetPillarsFor(level interface{}) *[]string {
 	var r []string
 	all := "All"
@@ -131,6 +195,7 @@ func GetPillarsFor(level interface{}) *[]string {
 			case nil:
 				//get pillars
 				rows, err := DB.Query(`SELECT pillar FROM `+cfg.Loader().PillarsTable+` WHERE fortitle=? OR fortitle=?`, level, all)
+				defer rows.Close()
 				if err == nil {
 					for rows.Next() {
 						var pillar string
@@ -147,6 +212,7 @@ func GetPillarsFor(level interface{}) *[]string {
 			case nil:
 				//get pillars
 				rows, err := DB.Query(`SELECT pillar FROM `+cfg.Loader().PillarsTable+` WHERE fortitle=? OR fortitle=?`, level, all)
+				defer rows.Close()
 				if err == nil {
 					for rows.Next() {
 						var pillar string
@@ -165,21 +231,23 @@ func GetPillarsFor(level interface{}) *[]string {
 			SlotName string
 		}
 	}:
-		var title string
-		row, err := DB.Query(`SELECT DISTINCT(title) FROM `+cfg.Loader().HouseLevelTable+` WHERE slotdesignation=? AND slotname=?`, dd.Designation, dd.Data.SlotName)
-		if err == nil {
-			for row.Next() {
-				_ = row.Scan(&title)
-			}
-		}
 		switch dd.Type {
 		case "houseslot":
+			var title string
+			row, err := DB.Query(`SELECT DISTINCT(title) FROM `+cfg.Loader().HouseLevelTable+` WHERE slotdesignation=? AND slotname=?`, dd.Designation, dd.Data.SlotName)
+			defer row.Close()
+			if err == nil {
+				for row.Next() {
+					_ = row.Scan(&title)
+				}
+			}
 			//configure for houselevel
-			_, err := DB.Exec(`DESCRIBE ` + cfg.Loader().PillarsTable)
-			switch err {
+			_, errT := DB.Exec(`DESCRIBE ` + cfg.Loader().PillarsTable)
+			switch errT {
 			case nil:
 				//get pillars
 				rows, err := DB.Query(`SELECT pillar FROM `+cfg.Loader().PillarsTable+` WHERE fortitle=? OR fortitle=?`, title, all)
+				defer rows.Close()
 				if err == nil {
 					for rows.Next() {
 						var pillar string
@@ -188,6 +256,57 @@ func GetPillarsFor(level interface{}) *[]string {
 							r = append(r, pillar)
 						}
 					}
+				}
+			}
+		case "rootslot":
+			var title string
+			log.Println(dd.Designation)
+			log.Println(dd.Data.SlotName)
+			row, err := DB.Query(`SELECT DISTINCT(title) FROM `+cfg.Loader().GrassRootLevelTable+` WHERE slotdesignation=? AND slotname=?`, dd.Designation, dd.Data.SlotName)
+			defer row.Close()
+			if err == nil {
+				for row.Next() {
+					_ = row.Scan(&title)
+				}
+			}
+			//configure for rootlevel
+			_, errT := DB.Exec(`DESCRIBE ` + cfg.Loader().PillarsTable)
+			switch errT {
+			case nil:
+				//get pillars
+				rows, err := DB.Query(`SELECT pillar FROM `+cfg.Loader().PillarsTable+` WHERE fortitle=? OR fortitle=?`, title, all)
+				defer rows.Close()
+				if err == nil {
+					for rows.Next() {
+						var pillar string
+						err := rows.Scan(&pillar)
+						if err == nil {
+							r = append(r, pillar)
+							//log.Println(pillar)
+						}
+					}
+				}
+			}
+		}
+	case struct{ GovName string }:
+		//configure for subgovlevel
+		var title string
+		row, err := DB.Query(`SELECT DISTINCT(position) FROM `+cfg.Loader().SubGovLevelTable+` WHERE slotname=?`, dd.GovName)
+		defer row.Close()
+		if err == nil {
+			for row.Next() {
+				_ = row.Scan(&title)
+			}
+		}
+		//get pillars
+		rows, err := DB.Query(`SELECT pillar FROM `+cfg.Loader().PillarsTable+` WHERE fortitle=? OR fortitle=?`, title, all)
+		defer rows.Close()
+		if err == nil {
+			for rows.Next() {
+				var pillar string
+				err := rows.Scan(&pillar)
+				if err == nil {
+					r = append(r, pillar)
 				}
 			}
 		}
@@ -238,10 +357,11 @@ func RemovePillar(d string) *bool {
 }
 
 func GetRepSlots() *map[string][]string {
-	//table := cfg.Loader().SlotsTable
+	table := cfg.Loader().SlotsTable
 	var d []string
 	Slots := make(map[string][]string)
-	rows, err := DB.Query(`SELECT DISTINCT designation FROM slotstable` /*+ table*/)
+	rows, err := DB.Query(`SELECT DISTINCT designation FROM ` + table)
+	defer rows.Close()
 	if err == nil {
 		for rows.Next() {
 			var slot types.Slot
@@ -256,6 +376,7 @@ func GetRepSlots() *map[string][]string {
 		var slotsOfKey []string
 		//get the slotnames for the key
 		rows, err := DB.Query(`SELECT DISTINCT slotname FROM slotstable WHERE designation=?`, key)
+		defer rows.Close()
 		if err == nil {
 			for rows.Next() {
 				var slotname string
@@ -270,6 +391,18 @@ func GetRepSlots() *map[string][]string {
 	return &Slots
 }
 
+func GetRepSlotDesignationForSubGov(s string) *string {
+	var t string
+	row, err := DB.Query(`SELECT DISTINCT(slotdesignation) FROM `+cfg.Loader().SubGovLevelTable+` WHERE slotname=?`, s)
+	defer row.Close()
+	if err == nil {
+		for row.Next() {
+			_ = row.Scan(&t)
+		}
+	}
+	return &t
+}
+
 func GetAPIofForLevelAndImage(d interface{}) *map[string]string {
 	var theAPI string
 	var theImage string
@@ -278,6 +411,7 @@ func GetAPIofForLevelAndImage(d interface{}) *map[string]string {
 	case string:
 		table := cfg.Loader().TopLevelTable
 		rows, err := DB.Query(`SELECT api,imageurl FROM `+table+` WHERE position=?`, dd)
+		defer rows.Close()
 		if err == nil {
 			for rows.Next() {
 				err := rows.Scan(&theAPI, &theImage)
@@ -293,9 +427,37 @@ func GetAPIofForLevelAndImage(d interface{}) *map[string]string {
 			SlotName string
 		}
 	}:
+		switch dd.Type {
+		case "houseslot":
+			table := cfg.Loader().HouseLevelTable
+			rows, err := DB.Query(`SELECT api,imageurl FROM `+table+` WHERE slotdesignation =? AND slotname=?`, dd.Designation, dd.Data.SlotName)
+			defer rows.Close()
+			if err == nil {
+				for rows.Next() {
+					err := rows.Scan(&theAPI, &theImage)
+					report.ErrLogger(err)
+				}
+			}
+			m["api"] = theAPI
+			m["image"] = theImage
+		case "rootslot":
+			table := cfg.Loader().GrassRootLevelTable
+			rows, err := DB.Query(`SELECT api,imageurl FROM `+table+` WHERE slotdesignation =? AND slotname=?`, dd.Designation, dd.Data.SlotName)
+			defer rows.Close()
+			if err == nil {
+				for rows.Next() {
+					err := rows.Scan(&theAPI, &theImage)
+					report.ErrLogger(err)
+				}
+			}
+			m["api"] = theAPI
+			m["image"] = theImage
+		}
 
-		table := cfg.Loader().HouseLevelTable
-		rows, err := DB.Query(`SELECT api,imageurl FROM `+table+` WHERE slotdesignation =? AND slotname=?`, dd.Designation, dd.Data.SlotName)
+	case struct{ GovName string }:
+		table := cfg.Loader().SubGovLevelTable
+		rows, err := DB.Query(`SELECT api,imageurl FROM `+table+` WHERE slotname=?`, dd.GovName)
+		defer rows.Close()
 		if err == nil {
 			for rows.Next() {
 				err := rows.Scan(&theAPI, &theImage)
@@ -304,7 +466,6 @@ func GetAPIofForLevelAndImage(d interface{}) *map[string]string {
 		}
 		m["api"] = theAPI
 		m["image"] = theImage
-
 	}
 
 	return &m
@@ -314,6 +475,7 @@ func GetRepSlotsForHouse(house string) *[]string {
 	var rAll []string
 	table := cfg.Loader().HouseLevelTable
 	rows, err := DB.Query(`SELECT DISTINCT slotname FROM `+table+` WHERE housename=?`, house)
+	defer rows.Close()
 	if err == nil {
 		for rows.Next() {
 			var s string
@@ -329,6 +491,7 @@ func GetRepSlotsForHouseDesignation(house string) *string {
 	var rAll string
 	table := cfg.Loader().HouseLevelTable
 	rows, err := DB.Query(`SELECT DISTINCT slotdesignation FROM `+table+` WHERE housename=?`, house)
+	defer rows.Close()
 	if err == nil {
 		for rows.Next() {
 			err := rows.Scan(&rAll)
@@ -337,4 +500,35 @@ func GetRepSlotsForHouseDesignation(house string) *string {
 	}
 	return &rAll
 
+}
+
+func GetRepSlotsForRoot(gov string) *[]string {
+	var rAll []string
+	table := cfg.Loader().GrassRootLevelTable
+	rows, err := DB.Query(`SELECT DISTINCT slotname FROM `+table+` WHERE legof=?`, gov)
+	defer rows.Close()
+	if err == nil {
+		for rows.Next() {
+			var s string
+			err := rows.Scan(&s)
+			report.ErrLogger(err)
+			rAll = append(rAll, s)
+		}
+	}
+	return &rAll
+
+}
+
+func GetRepSlotsForRootDesignation(gov string) *string {
+	var rAll string
+	table := cfg.Loader().GrassRootLevelTable
+	rows, err := DB.Query(`SELECT DISTINCT slotdesignation FROM `+table+` WHERE legof=?`, gov)
+	defer rows.Close()
+	if err == nil {
+		for rows.Next() {
+			err := rows.Scan(&rAll)
+			report.ErrLogger(err)
+		}
+	}
+	return &rAll
 }

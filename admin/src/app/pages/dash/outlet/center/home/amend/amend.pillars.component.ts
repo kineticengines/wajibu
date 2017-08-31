@@ -57,7 +57,7 @@ export class AmendPillarsComponent implements OnInit{
     addForm:FormGroup
     numOfPillars:number;
     pillars:Array<Object> = []
-    titles:Array<string> = ["All"]
+    titles:Array<string> = []
     constructor(private dash:DashService,private fb:FormBuilder,public snackBar: MdSnackBar){
 
     }
@@ -67,7 +67,9 @@ export class AmendPillarsComponent implements OnInit{
     }
 
     getPillars(){
-        this.dash.fetchTitles().subscribe(d =>{            
+        this.titles.splice(0,this.titles.length)
+        this.dash.fetchTitles().subscribe(d =>{   
+            this.titles.push("All")         
             d.titles.forEach(element =>{
                 this.titles.push(element)
             })

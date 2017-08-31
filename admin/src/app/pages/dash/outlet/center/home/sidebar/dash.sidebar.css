@@ -4,7 +4,7 @@ ul {
 a {
     text-decoration: none;
     color: #818181;
-    letter-spacing: 1px;
+    letter-spacing: 1px;    
 }
 .Sidebar-navItem {
     padding-left: 17px;
@@ -13,5 +13,6 @@ a {
 }
 .active{  
   color: teal !important;  
-  font-weight: bolder;
+  font-weight: bolder !important;
+  background: white !important;
 }

@@ -33,7 +33,8 @@ import { SessionChecker } from "../../../../../services/session.checker";
   template: `
     <div class="dashboard">
       <div class="top-container">
-        <h1 class="top-item">Wajibu</h1>
+        <!--<h1 class="top-item">Wajibu</h1>-->
+        <img src="./assets/logo.png" class="top-item logo">
         <button class="top-item" md-raised-button (tap)="logout()">LOGOUT</button>
       </div>
       <div class="body-container">

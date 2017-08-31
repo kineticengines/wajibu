@@ -151,6 +151,7 @@ type HousePosition struct { // be used for house level and subgov leg house
 	Gender          string
 	NthPosition     string
 	SlotDesignation string //county or constituency or ward
+	LegOf           string // county
 	SlotName        string //name
 	Image           string
 	API             string
@@ -192,7 +193,7 @@ type FormConfig struct {
 	Options     []interface{} `json:"options,omitempty"`
 	Placeholder string        `json:"placeholder"`
 	Value       string        `json:"value"`
-	Disabled    bool          `json:"disabled"`
+	//Disabled    bool          `json:"disabled"`
 	//Validation  func()        `json:"validation"`
 }
 

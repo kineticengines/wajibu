@@ -45,19 +45,19 @@ export class AuthGuard implements CanActivate,CanActivateChild{
                              .take(1)
                              .map(d => d.isSet)
                              .do(isSet => {                                 
-                                 if (!isSet) this.router.navigate(["/init"])
+                                 if (!isSet) this.router.navigate(["init"])                                 
                              })
           
           
       }  
        canActivateChild(route: ActivatedRouteSnapshot, state: RouterStateSnapshot):Observable<boolean> {           
-            return Observable.of(this.session.getDeploy())
+            return Observable.of(this.session.getDeploy())                             
                              .take(1)
-                             .map(d => d.isDeployed)
+                             .map(d => d.isDeployed)                             
                              .do(isDeployed => {                                 
-                                 if (!isDeployed) this.router.navigate(["/dash/install"])
-                             })
-                             
+                                 if (!isDeployed) this.router.navigate(["dash/install"])   
+                                 //console.log(isDeployed)                                               
+                             })                     
                              
        }
     
@@ -72,7 +72,7 @@ export class DeployedGuard implements CanActivateChild{
                              .take(1)
                              .map(d => d.isDeployed)
                              .do(isDeployed => {                                                       
-                                 if (!isDeployed) this.router.navigate(["/dash"])
+                                 if (!isDeployed) this.router.navigate(["dash"])
                              })
     }
 }

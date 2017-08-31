@@ -11,13 +11,14 @@
     flex-grow: 1;
 }
 .info-box{
-    margin: 2px;
+    margin: 3px;
     border-width: 2px;
     border-style: solid;   
     border-top-left-radius: 15px;
     border-top-right-radius: 15px;
     background-color: #00897b;
     color: whitesmoke;    
-    padding: 5px; 
+    padding: 6px; 
+    text-align: justify;
     font-size: 14px;
 }

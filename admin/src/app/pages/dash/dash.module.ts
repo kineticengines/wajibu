@@ -67,11 +67,11 @@ const routes:Routes = [
         children:[
             {path:"",component: DashCenterHomeComponent,canActivateChild:[AuthGuard],
                 children:[
-                    { path: '', component: GeneralComponent},
+                    { path: "", component: GeneralComponent},
                     { path: 'sentiment', component: SentimentComponent},
                     { path: 'amend', component: AmendComponent},
                     { path: 'settings', component: SettingsComponent},
-                    {path : '**',component:DashNotFoundComponent}
+                    //{path : '**',component:DashNotFoundComponent}
                 ]
             },
             {path:"install",component:DashInstallRootComponent,canActivateChild:[DeployedGuard],

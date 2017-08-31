@@ -48,7 +48,7 @@ func switchBuildSteps() {
 }
 
 func switchForCentral() {
-	k := getInCompleteStepsForCentral(centralBuildKey, DeploySteps)
+	k := getInCompleteSteps(centralBuildKey, DeploySteps)
 	for _, v := range k {
 		switch v {
 		case 1:
@@ -64,7 +64,7 @@ func switchForCentral() {
 }
 
 func switchForNonCentral() {
-	k := getInCompleteStepsForCentral(centralBuildKey, DeploySteps)
+	k := getInCompleteSteps(centralBuildKey, DeploySteps)
 	for _, v := range k {
 		switch v {
 		case 1:
@@ -83,7 +83,7 @@ func switchForNonCentral() {
 	}
 }
 
-func getInCompleteStepsForCentral(key string, steps int) []int {
+func getInCompleteSteps(key string, steps int) []int {
 	var inComplete []int
 	for index := 1; index <= steps; index++ {
 		m := key + ":" + strconv.Itoa(index)

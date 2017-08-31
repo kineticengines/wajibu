@@ -27,9 +27,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 .holder{   
     display: flex;
+    flex-direction: column;
     flex-wrap: nowrap;
     justify-content: center;
     align-items: center;
+}
+.holder-item{
+    align-self: center;
 }
 .card{
     width: 400px;

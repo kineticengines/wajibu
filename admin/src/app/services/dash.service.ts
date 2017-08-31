@@ -86,6 +86,12 @@ export class DashService{
                 .map(this.extractData) 
     }
 
+    fetchSubGovs(){
+       return this.http
+                .get(`${ServerURL}/api/dash/fetch/subgovs`)
+                .map(this.extractData) 
+    }
+
     savePillar(obj:Object){
         let OBJ = JSON.stringify(obj)        
         return this.http.post(`${ServerURL}/api/dash/save/pillar`,OBJ,this.options)
@@ -119,6 +125,33 @@ export class DashService{
     configureHouseLevel(obj:Object){
         let OBJ = JSON.stringify(obj)        
         return this.http.post(`${ServerURL}/api/dash/house/level/configure`,OBJ,this.options)
+                .catch(err => Observable.throw(err))
+                .map(this.extractData)
+    }
+
+    checkIfIsCentral(){
+        return this.http
+                .get(`${ServerURL}/api/dash/check/if/central`)
+                .map(this.extractData)                
+    }
+
+    configureSubGovLevel(obj:Object){
+        let OBJ = JSON.stringify(obj)        
+        return this.http.post(`${ServerURL}/api/dash/subgov/level/configure`,OBJ,this.options)
+                .catch(err => Observable.throw(err))
+                .map(this.extractData)
+    }
+
+    getRootReps(obj:Object){
+       let OBJ = JSON.stringify(obj)        
+        return this.http.post(`${ServerURL}/api/dash/sentiment/get/root/reps`,OBJ,this.options)
+                .catch(err => Observable.throw(err))
+                .map(this.extractData) 
+    }
+
+    configureRootLevel(obj:Object){
+        let OBJ = JSON.stringify(obj)        
+        return this.http.post(`${ServerURL}/api/dash/root/level/configure`,OBJ,this.options)
                 .catch(err => Observable.throw(err))
                 .map(this.extractData)
     }

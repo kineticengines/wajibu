@@ -5,17 +5,21 @@ import { Initializer } from "../../../../services/init.service";
 @Component({
     moduleId:module.id,
     selector:"filter-box",
-    template:`
-        <div class="container list-box" [@filterBoxAnim]>
-            <div class="container-item">
-                <h4>Filter by;</h4>
-            <div>
-            <div class="container-item">
+    template:`             
+        <div class="container list-box">            
+            <div class="container-item">   
+                 <h5>Titles</h5>              
                 <ul *ngFor="let title of titles">
                     <li><a 	[routerLink]="['../home/fan/',title]">{{title | titlecase}}</a></li>                    
                 </ul>
-            <div>
-        </div>    
+            </div>
+            <div class="container-item">  
+                <h5>Pillars</h5>              
+                <ul *ngFor="let pillar of pillars">
+                    <li><a 	[routerLink]="['../home/fan/',pillar]">{{pillar | titlecase}}</a></li>                    
+                </ul>
+            </div>
+        </div> 
             
     `,
     styleUrls:["./filter.box.component.css"],
@@ -39,11 +43,18 @@ import { Initializer } from "../../../../services/init.service";
 
 export class FilterBoxComponent implements OnInit{
     titles:Array<string> = [];
+    pillars:Array<string> = [];
     constructor(private init:Initializer){}
     ngOnInit(){
         this.init.getTitles().subscribe(d => {
             d.titles.forEach(element => {
                 this.titles.push(element)
+            });
+        })
+
+        this.init.getPillars().subscribe(d =>{            
+            d.pillars.forEach(e => {
+                this.pillars.push(e.pillar)
             });
         })
     }

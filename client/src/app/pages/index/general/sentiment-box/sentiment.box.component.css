@@ -71,7 +71,7 @@
     align-self: auto;
 }
 .sentiment-side-items-item-content{
-    letter-spacing: 1px;
+    letter-spacing: 0.3px;
     text-align: justify;
 }
 .sentiment-side-items-item-header,.sentiment-side-items-item-content,.sentiment-side-items-item-footer{

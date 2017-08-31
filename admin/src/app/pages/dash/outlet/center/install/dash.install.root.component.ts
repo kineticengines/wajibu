@@ -37,7 +37,8 @@ import { AnonymousSubscription } from "rxjs/Subscription"
   moduleId:module.id,
   template: `
     <Section align="center">
-      <h1>Wajibu</h1>
+      <!--<h1>Wajibu</h1>-->
+      <img src="./assets/logo.png" style="width:150px;height:150px;">
       <h3>Building and deployement</h3>
     </Section> 
     <div class="logout-container">

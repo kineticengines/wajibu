@@ -29,7 +29,7 @@ import { DynamicFormComponent } from '../../../../../../dynamic-form/containers/
                     <md-chip *ngIf="dpresConfig.length <= 0"> Error : Could not initilize deputy president level data</md-chip>
                     <md-chip>Error : could not initilize house level data</md-chip>
                     <md-chip>Error : Could not initilize subgovernment level data</md-chip>
-                     <md-chip>Error : Could not initilize grassroot level data</md-chip>
+                     
                 </md-chip-list> 
             </Section><br><br> --><br>
             <Section><md-spinner *ngIf="processingSubmit" style="width:25px;height:25px;margin-bottom:10px;"></md-spinner></Section>                                           
@@ -51,7 +51,7 @@ import { DynamicFormComponent } from '../../../../../../dynamic-form/containers/
                         </form>
                     </div>
                     <div *ngIf="showChooseFromHouseSlotsForm">
-                    <form [formGroup]="chooseFromHouseSlotsForm">
+                        <form [formGroup]="chooseFromHouseSlotsForm">
                             <md-select class="choose-house-select" placeholder="Choose a {{houseDesignation | titlecase}}" formControlName="slotName">
                                     <md-option *ngFor="let slot of houseSlots" [value]="slot"  class="the-input">{{slot | titlecase}}</md-option>
                             </md-select>                                                   
@@ -65,10 +65,60 @@ import { DynamicFormComponent } from '../../../../../../dynamic-form/containers/
                 </Section>
             </Section> 
             <Section *ngIf="showSubForm">
-                <h3>sub gov level</h3>
+                <br>
+                <div *ngIf="!isCentral">
+                    <div class="house-level-configure">
+                        <div class="house-level-configure-item">
+                            <form [formGroup]="chooseSubGovForm">
+                                <md-select class="choose-house-select" placeholder="Choose {{subgovlevelheadtitle | titlecase}}" formControlName="govName">
+                                        <md-option *ngFor="let gov of subgovlevels" [value]="gov"  class="the-input">{{gov | titlecase}}</md-option>
+                                </md-select>
+                                <button md-raised-button type="button" class="configure-house-btn" (click)="configSubGov(chooseSubGovForm)" >CONFIGURE REPRESENTATIVE</button>
+                            </form>
+                        </div>
+                    </div> 
+                     <br>
+                    <Section>
+                        <dynamic-form [config]="subGovConfig" *ngIf="subGovConfig.length >= 1"  #form="dynamicForm" (submit)="submit($event)"></dynamic-form>
+                    </Section>                   
+                </div>
+                <div *ngIf="isCentral">
+                    <md-chip-list>
+                      <md-chip>Government type is Central</md-chip>
+                    </md-chip-list>
+                </div>
             </Section>  
             <Section *ngIf="showGrassForm">
-                <h3>grassroot level</h3>
+                <br>
+                <div *ngIf="!isCentral">
+                    <div class="house-level-configure">
+                        <div class="house-level-configure-item">
+                            <form [formGroup]="chooseSubGovForRootForm">
+                                <md-select class="choose-house-select" placeholder="Choose {{subgovlevelheadtitle | titlecase}}" formControlName="govName">
+                                        <md-option *ngFor="let gov of subgovlevels" [value]="gov"  class="the-input">{{gov | titlecase}}</md-option>
+                                </md-select>
+                                <button md-raised-button type="button" class="configure-house-btn" (click)="getRepsForSubgovs(chooseSubGovForRootForm)" >GET REPRESENTATIVES</button>
+                            </form>
+                        </div>
+                        <div *ngIf="showFromSubGovSlotsForm">
+                            <form [formGroup]="chooseFromSubGovSlotsForm">
+                                <md-select class="choose-house-select" placeholder="Choose a {{rootRepDesignation | titlecase}}" formControlName="slotName">
+                                        <md-option *ngFor="let root of rootlevels" [value]="root"  class="the-input">{{root | titlecase}}</md-option>
+                                </md-select>                                                   
+                                <button md-raised-button type="button" class="configure-house-btn" (click)="configRepForRoot(chooseFromSubGovSlotsForm)" >CONFIGURE REPRESENTATIVE</button>
+                            </form>
+                        </div>
+                    </div> 
+                    <br>
+                    <Section>
+                        <dynamic-form [config]="rootConfig" *ngIf="rootConfig.length >= 1"  #form="dynamicForm" (submit)="submit($event)"></dynamic-form>
+                    </Section>                
+                </div>
+                <div *ngIf="isCentral"> 
+                    <md-chip-list>
+                      <md-chip>Government type is Central</md-chip>
+                    </md-chip-list>
+                </div>
             </Section>            
             
         </div>
@@ -80,13 +130,17 @@ export class SentimentComponent implements OnInit{
 
     chooseHouseForm:FormGroup;
     houseDesignation:string;
+    rootRepDesignation:string;
     houseSlots:Array<string> = [];
     showChooseFromHouseSlotsForm:boolean = false;
+    showFromSubGovSlotsForm:boolean = false;
     chooseFromHouseSlotsForm:FormGroup;
-    //houseForm:FormGroup
-    //subForm:FormGroup
-    //grassForm:FormGroup
+    chooseSubGovForm:FormGroup;
+    chooseSubGovForRootForm:FormGroup;
+    chooseFromSubGovSlotsForm:FormGroup;
+
     processingSubmit:boolean = false;
+    isCentral:boolean = false
    
     showTopForm:boolean
     showHouseForm:boolean
@@ -99,10 +153,16 @@ export class SentimentComponent implements OnInit{
     levels:Array<string> = ['Top Level','House Level','Subgovernment Level','Grassroot Level',];
     toplevels:Array<string> = ['President','Deputy President']
     houselevels:Array<string> = []
+    subgovlevels:Array<string> = []
+    subgovlevelheadtitle:string;
+    rootlevels:Array<string> = []
+    
 
     presConfig:Array<FieldConfig> = []
     dpresConfig:Array<FieldConfig> = []
     houseConfig:Array<FieldConfig> = []
+    subGovConfig:Array<FieldConfig> = []
+    rootConfig:Array<FieldConfig> = []
     
 
     constructor(private formBuilder:FormBuilder,private dash:DashService,private snackbar:MdSnackBar,
@@ -110,6 +170,24 @@ export class SentimentComponent implements OnInit{
     }
     
     ngOnInit(){
+        this.dash.checkIfIsCentral().subscribe(d =>{
+            this.isCentral = d.iscentral    
+            this.chgRef.detectChanges()           
+        })
+
+        this.dash.fetchHouses().subscribe(h =>{           
+            h.houses.forEach(e => {
+                this.houselevels.push(e)
+            });
+        })
+
+        this.dash.fetchSubGovs().subscribe(h =>{
+            this.subgovlevelheadtitle = h.designation
+            h.govs.forEach(e => {
+                this.subgovlevels.push(e)
+            });
+        })
+
         this.dash.presidentLevelConfigure().subscribe(d =>{            
             d.config.config.forEach(element => {                
                 this.presConfig.push(element)                
@@ -119,12 +197,7 @@ export class SentimentComponent implements OnInit{
             d.config.config.forEach(element => {
                 this.dpresConfig.push(element)                       
             });
-        })
-        this.dash.fetchHouses().subscribe(h =>{           
-            h.houses.forEach(e => {
-                this.houselevels.push(e)
-            });
-        })
+        })        
 
         this.chooseHouseForm = this.formBuilder.group({
             houseName:['',[Validators.required]]
@@ -132,6 +205,18 @@ export class SentimentComponent implements OnInit{
 
         this.chooseFromHouseSlotsForm = this.formBuilder.group({
             slotName:['',[Validators.required]]          
+        })
+
+        this.chooseSubGovForm = this.formBuilder.group({
+            govName:['',[Validators.required]] 
+        })
+
+        this.chooseSubGovForRootForm = this.formBuilder.group({
+            govName:['',[Validators.required]]
+        })
+
+        this.chooseFromSubGovSlotsForm = this.formBuilder.group({
+            slotName:['',[Validators.required]] 
         })
 
     }    
@@ -147,6 +232,8 @@ export class SentimentComponent implements OnInit{
                     this.showDPres = false
                     this.processingSubmit = false;
                     this.resetHouseConfig()
+                    this.resetSubGovConfig()
+                    this.resetRootConfig()
                     this.chgRef.detectChanges()
                 break;
             case this.levels[1]:
@@ -158,6 +245,8 @@ export class SentimentComponent implements OnInit{
                     this.showDPres = false
                     this.processingSubmit = false;
                     this.resetHouseConfig()
+                    this.resetSubGovConfig()
+                    this.resetRootConfig()
                     this.chgRef.detectChanges()
                 break;
             case this.levels[2]:
@@ -169,6 +258,8 @@ export class SentimentComponent implements OnInit{
                     this.showDPres = false
                     this.processingSubmit = false;
                     this.resetHouseConfig()
+                    this.resetSubGovConfig()
+                    this.resetRootConfig()
                     this.chgRef.detectChanges()
                 break;
             case this.levels[3]:
@@ -180,6 +271,8 @@ export class SentimentComponent implements OnInit{
                     this.showDPres = false
                     this.processingSubmit = false;
                     this.resetHouseConfig()
+                    this.resetSubGovConfig()
+                    this.resetRootConfig()
                     this.chgRef.detectChanges()
                 break;        
             default:
@@ -191,6 +284,8 @@ export class SentimentComponent implements OnInit{
                     this.showDPres = false
                     this.processingSubmit = false;
                     this.resetHouseConfig()
+                    this.resetSubGovConfig()
+                    this.resetRootConfig()
                     this.chgRef.detectChanges()
                 break;
         }
@@ -229,16 +324,11 @@ export class SentimentComponent implements OnInit{
                     break;
             }
         });
-        if (count === keys.length){                    
-            Object.getOwnPropertyNames(value.thedata).forEach(element => {                
-                if (element === ""){                    
-                    delete value.thedata[element]
-                }
-            });
+        if (count === keys.length){          
             let s = new Sentiment()
             s.api = value.forwho
             s.image = value.image
-            s.data = value.thedata            
+            s.data = value.thedata                     
             this.dash.addSentiment(s).subscribe(d => {                
                 if(d.status === true){
                     this.processingSubmit = false;                   
@@ -247,40 +337,121 @@ export class SentimentComponent implements OnInit{
                    this.processingSubmit = false;
                    this.snackbar.open("Error occured.","Close",{duration:2500}) 
                 }
-            })             
+            })            
         }
     }
 
     getRepSlotsForHouse(form:any){  
-        this.houseConfig.splice(0,this.houseConfig.length)     
-        this.dash.getRepSlotsForHouse(form.value).subscribe(d =>{
-            this.houseDesignation = d.designation;
-            this.houseSlots.splice(0,this.houseSlots.length)
-            this.showChooseFromHouseSlotsForm = true;
-            this.chgRef.detectChanges()
-            d.slots.forEach(e => {
-               this.houseSlots.push(e) 
-            });
-        })
+        this.houseConfig.splice(0,this.houseConfig.length) 
+        switch (form.value.houseName) {
+            case null:
+                this.snackbar.open("Empty Field","Close",{duration:2500}) 
+                break;        
+            default:
+                this.dash.getRepSlotsForHouse(form.value).subscribe(d =>{
+                    this.houseDesignation = d.designation;
+                    this.houseSlots.splice(0,this.houseSlots.length)
+                    this.showChooseFromHouseSlotsForm = true;
+                    this.chgRef.detectChanges()
+                    d.slots.forEach(e => {
+                    this.houseSlots.push(e) 
+                    });
+                })
+                break;
+        }    
+        
     }
 
     configRep(form:any){     
-        this.houseConfig.splice(0,this.houseConfig.length)     
-        let d = new HouseConfig()
-        d.designation = this.houseDesignation;
-        d.type = 'houseslot'
-        d.data = form.value            
-        this.dash.configureHouseLevel(d).subscribe(d =>{
-            d.config.config.forEach(element => {                
-                this.houseConfig.push(element)                
-            });                 
-        })
+        this.houseConfig.splice(0,this.houseConfig.length)  
+        switch (form.value.slotName) {
+            case null:
+                this.snackbar.open("Empty Field","Close",{duration:2500}) 
+                break;        
+            default:
+                let d = new HouseConfig()
+                d.designation = this.houseDesignation;
+                d.type = 'houseslot'
+                d.data = form.value            
+                this.dash.configureHouseLevel(d).subscribe(d =>{
+                    d.config.config.forEach(element => {                
+                        this.houseConfig.push(element)                
+                    });                 
+                })
+                break;
+        }
+        
+        
+    }
+
+    configSubGov(form:any){    
+        this.subGovConfig.splice(0,this.subGovConfig.length)    
+        switch (form.value.govName) {
+            case null:
+                 this.snackbar.open("Empty Field","Close",{duration:2500}) 
+                break;        
+            default:
+                this.dash.configureSubGovLevel(form.value).subscribe(d =>{                    
+                    d.config.config.forEach(element => {
+                        this.subGovConfig.push(element) 
+                    });                                        
+                })
+                break;
+        }
+    }
+
+    getRepsForSubgovs(form:any){        
+        this.rootlevels.splice(0,this.rootlevels.length)
+        switch (form.value.govName) {
+            case null:
+                this.snackbar.open("Empty Field","Close",{duration:2500})
+                break;        
+            default:
+                this.dash.getRootReps(form.value).subscribe(d =>{ 
+                    this.showFromSubGovSlotsForm = true;
+                    this.rootRepDesignation = d.designation;                                       
+                    d.slots.forEach(element => {
+                       this.rootlevels.push(element) 
+                    });
+                })
+                break;
+        }
+    }
+
+    configRepForRoot(form:any){
+       this.rootConfig.splice(0,this.rootConfig.length)
+       switch (form.value.slotName) {
+           case null:
+               this.snackbar.open("Empty Field","Close",{duration:2500})            
+               break;       
+           default:
+                let d = new HouseConfig()
+                d.designation = this.rootRepDesignation;
+                d.type = 'rootslot'
+                d.data = form.value 
+               this.dash.configureRootLevel(d).subscribe(d =>{                   
+                   d.config.config.forEach(element => {                                    
+                        this.rootConfig.push(element)                
+                    }); 
+               })
+               break;
+       } 
     }
 
     resetHouseConfig(){
         this.houseConfig.splice(0,this.houseConfig.length)
         this.chooseHouseForm.reset()
         this.chooseFromHouseSlotsForm.reset()
+    }
+
+    resetSubGovConfig(){
+        this.subGovConfig.splice(0,this.subGovConfig.length)
+        this.chooseSubGovForm.reset()
+    }
+
+    resetRootConfig(){
+        this.chooseSubGovForRootForm.reset()
+        this.chooseFromSubGovSlotsForm.reset()
     }
 
 

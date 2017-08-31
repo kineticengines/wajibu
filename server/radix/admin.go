@@ -82,6 +82,41 @@ func AllHouses() *[]string {
 	return &rAll
 }
 
+func AllSubGovs() *struct {
+	Designation string   `json:"designation"`
+	Govs        []string `json:"govs"`
+} {
+	var rGovs []string
+	var designation string
+	res, err := RDB.Cmd("EXISTS", SUBGOVS).Int()
+	report.ErrLogger(err)
+	switch res {
+	case 0:
+		//does not exist in redis
+		p := *dbase.GetSubGovsFromDB()
+		if p.Data.Error == nil {
+			designation = p.Designation
+			for _, v := range p.Data.House {
+				rGovs = append(rGovs, v)
+			}
+		}
+	case 1:
+		//get data from redis : smembers
+		res, err := RDB.Cmd("SMEMBERS", SUBGOVS).List()
+		report.ErrLogger(err)
+		for _, v := range res {
+			rGovs = append(rGovs, v)
+		}
+	}
+	var rAll struct {
+		Designation string   `json:"designation"`
+		Govs        []string `json:"govs"`
+	}
+	rAll.Designation = designation
+	rAll.Govs = rGovs
+	return &rAll
+}
+
 func AllPillars() (*[]types.Pillar, error) {
 	var rAll []types.Pillar
 	var pillarErr error

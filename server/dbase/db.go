@@ -48,11 +48,11 @@ type PingTable struct {
 
 func (p *PingTable) TableExists() error {
 	var r error
-	_, err := DB.Exec(`DESCRIBE ` + cfg.Loader().AdminTable)
+	_, err := DB.Exec(`DESCRIBE ` + p.Table)
 	switch err {
 	case nil:
 		//check if table has data
-		_, err := DB.Query(`SELECT * FROM ` + cfg.Loader().AdminTable)
+		_, err := DB.Query(`SELECT * FROM ` + p.Table)
 		if err != nil {
 			r = err
 		}

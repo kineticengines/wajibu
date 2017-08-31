@@ -1,26 +1,33 @@
-<div class="holder">
-    <md-spinner *ngIf="processing"></md-spinner>
-    <md-card *ngIf="showLoginForm">
-        <form [formGroup]="loginForm" (ngSubmit)="proceedToLogin(loginForm)" novalidate>
-            <h3>Login</h3>
+<div class="holder">  
+    <div class="holder-item">
+      <img src="./assets/logo.png" style="width:150px;height:150px;">  
+      <md-spinner *ngIf="processing"></md-spinner>
+    </div>  
+    <div class="holder-item">
+        <md-card *ngIf="showLoginForm">
+            <form [formGroup]="loginForm" (ngSubmit)="proceedToLogin(loginForm)" novalidate>
+                <h3>Login</h3>
+                <md-input-container class="input-field">
+                    <input mdInput type="text" formControlName="nameoremail" placeholder="Username/Email Address" class="the-input" >
+                </md-input-container> 
+                <md-input-container class="input-field">
+                    <input mdInput type="password" formControlName="password" placeholder="Password" class="the-input" > 
+                    <md-hint align="end" class="status-error" *ngIf="loginForm.get('password').hasError('minlength') && loginForm.get('password').touched">Minimum of 6 characters</md-hint>                     
+                </md-input-container>               
+                <button md-raised-button class="login-btn" [disabled]="loginForm.invalid" type="submit">LOGIN</button>             
+                <md-spinner *ngIf="processingLogin"></md-spinner>
+                <md-hint align="end" class="status">{{loginStatusString}}</md-hint>
+            </form>
+        </md-card>
+    </div>
+    <div class="holder-item">
+        <md-card class="card" *ngIf="showProvideEmailForm">
+            <h3>Setting up your credentials</h3>
             <md-input-container class="input-field">
-                <input mdInput type="text" formControlName="nameoremail" placeholder="Username/Email Address" class="the-input" >
-            </md-input-container> 
-            <md-input-container class="input-field">
-                <input mdInput type="password" formControlName="password" placeholder="Password" class="the-input" > 
-                <md-hint align="end" class="status-error" *ngIf="loginForm.get('password').hasError('minlength') && loginForm.get('password').touched">Minimum of 6 characters</md-hint>                     
-            </md-input-container>               
-            <button md-raised-button class="login-btn" [disabled]="loginForm.invalid" type="submit">LOGIN</button>             
-            <md-spinner *ngIf="processingLogin"></md-spinner>
-            <md-hint align="end" class="status">{{loginStatusString}}</md-hint>
-        </form>
-    </md-card>
-    <md-card class="card" *ngIf="showProvideEmailForm">
-        <h3>Setting up your credentials</h3>
-        <md-input-container class="input-field">
-           <input mdInput type="email" placeholder="Your Email Address" [disabled]="disable" class="the-input" #theEmail (keyup.enter)="submitEmail(theEmail.value)">
-           <md-hint align="end" class="status">{{statusString}}</md-hint>
-        </md-input-container>          
-    </md-card>   
+            <input mdInput type="email" placeholder="Your Email Address" [disabled]="disable" class="the-input" #theEmail (keyup.enter)="submitEmail(theEmail.value)">
+            <md-hint align="end" class="status">{{statusString}}</md-hint>
+            </md-input-container>          
+        </md-card>
+    </div>       
     
 </div>

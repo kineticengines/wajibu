@@ -12,6 +12,10 @@
 .top-item{
     align-self: center;
 }
+.logo{
+    width: 150px;
+    height: 150px;
+}
 .body-container{
    display: flex;
     flex-direction: row;

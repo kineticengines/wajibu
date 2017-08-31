@@ -67,8 +67,9 @@ func CreateOrAlterTable(d map[string]interface{}) {
 		//alter the table
 		for key, _ := range d {
 			_, err := DB.Query(`SELECT ` + key + ` FROM ` + table)
+			//defer rows.Close()
 			if err != nil {
-				_, err := DB.Exec(`ALTER TABLE ` + table + ` ADD ` + key + ` TEXT NULl`)
+				_, err := DB.Exec(`ALTER TABLE ` + table + ` ADD ` + key + ` TEXT`)
 				report.ErrLogger(err)
 			}
 		}
@@ -78,8 +79,8 @@ func CreateOrAlterTable(d map[string]interface{}) {
 		for key, _ := range d {
 			//add the keys to a set
 			_, err := DB.Exec(`CREATE TABLE ` + table + `(
-				id INT UNSIGNED NOT NULL AUTO_INCREMENT, api  VARCHAR(255) NOT NULL,
-				` + key + ` TEXT NULL, image VARCHAR(255) NOT NULL,createdDate VARCHAR(255) NOT NULL,
+				id INT NOT NULL AUTO_INCREMENT, api  VARCHAR(255) NOT NULL,
+				` + key + ` TEXT, image VARCHAR(255) NOT NULL,createdDate VARCHAR(255) NOT NULL,
 				PRIMARY KEY (id))`)
 			if err != nil {
 				CreateOrAlterTable(d)
@@ -92,34 +93,46 @@ func CreateOrAlterTable(d map[string]interface{}) {
 func AddSentimentToDB(d types.NewSentiment) *bool {
 	var r bool
 	table := cfg.Loader().SentimentsTable
-	stmt, errI := DB.Prepare(`INSERT INTO ` + table + ` (api,createdDate,image) values(?,?,?)`)
+	db, _ := DB.Begin()
+	stmt, errI := db.Prepare(`INSERT INTO ` + table + ` (api,createdDate,image) values(?,?,?)`)
 	report.ErrLogger(errI)
 	res, _ := stmt.Exec(d.API, time.Now().Local().String(), d.Image)
 	lastID, errL := res.LastInsertId()
-	//var counter int
-	if errL == nil {
-		log.Println("update")
-		log.Println(lastID)
-		for key, val := range d.Data {
-			log.Println(key)
-			log.Println(val)
-			/*updateStmt, errU := DB.Prepare(`UPDATE ` + table + ` SET ` + key + `=? WHERE id=?`)
-			report.ErrLogger(errU)
-			_, err := updateStmt.Exec(val, lastID)
-			log.Println(err)
-			if err == nil {
+	if errL != nil {
+		db.Rollback()
+	}
+	db.Commit()
+	var counter int
+	var notEmpty int
+	for key, val := range d.Data {
+		switch dd := val.(type) {
+		case string:
+			if len(dd) != 0 {
+				notEmpty++
+				log.Println(key)
+				db, _ := DB.Begin()
+				updateStmt, errU := DB.Prepare(`UPDATE ` + table + ` SET ` + key + `=? WHERE id=?`)
+				report.ErrLogger(errU)
+				_, err := updateStmt.Exec(dd, lastID)
+				if err != nil {
+					db.Rollback()
+				}
+				db.Commit()
 				counter++
-			}*/
+			}
+
 		}
+
 	}
 
-	/*switch len(d.Data) {
-	case counter:
+	switch counter {
+	case notEmpty:
 		r = true
 		break
 	default:
 		r = false
-	}*/
+		break
+	}
 	return &r
 }
 
@@ -151,6 +164,7 @@ func GetCurrentSentiments(f []string) *[]types.SentimentRow {
 	var data []types.SentimentRow
 	table := cfg.Loader().SentimentsTable
 	rows, err := DB.Query(`SELECT id,api,createdDate,image FROM ` + table + ` ORDER BY id DESC`)
+	defer rows.Close()
 	if err == nil {
 		for rows.Next() {
 			var dataRow types.SentimentRow
@@ -165,31 +179,21 @@ func GetCurrentSentiments(f []string) *[]types.SentimentRow {
 			dataRow.Image = image
 			switch len(f) {
 			case 1:
-				row, err := DB.Query(`SELECT `+f[0]+` FROM `+table+` WHERE api=? && id=?`, api, id)
+				row, err := DB.Query(`SELECT COALESCE(`+f[0]+`,'') FROM `+table+` WHERE api=? && id=?`, api, id)
+				defer row.Close()
 				if err == nil {
 					for row.Next() {
 						var f0 string
 						err := row.Scan(&f0)
-						if err != nil {
-							//delete the last item
-							row, err := DB.Query(`SELECT id FROM ` + table + ` ORDER BY id DESC LIMIT 1`)
-							if err == nil {
-								for row.Next() {
-									var id string
-									err := row.Scan(&id)
-									report.ErrLogger(err)
-									_, err = DB.Exec(`DELETE FROM `+table+` WHERE id=?`, id)
-									report.ErrLogger(err)
-								}
-							}
-						}
+						report.ErrLogger(err)
 						field := make(map[string]string)
 						field[f[0]] = f0
 						dataRow.Fields = append(dataRow.Fields, field)
 					}
 				}
 			case 2:
-				row, err := DB.Query(`SELECT `+f[0]+` ,`+f[1]+` FROM `+table+` WHERE api=? && id=?`, api, id)
+				row, err := DB.Query(`SELECT COALESCE(`+f[0]+`,'') ,COALESCE(`+f[1]+`,'') FROM `+table+` WHERE api=? && id=?`, api, id)
+				defer row.Close()
 				if err == nil {
 					for row.Next() {
 						var (
@@ -197,19 +201,7 @@ func GetCurrentSentiments(f []string) *[]types.SentimentRow {
 							f1 string
 						)
 						err := row.Scan(&f0, &f1)
-						if err != nil {
-							//delete the last item
-							row, err := DB.Query(`SELECT id FROM ` + table + ` ORDER BY id DESC LIMIT 1`)
-							if err == nil {
-								for row.Next() {
-									var id string
-									err := row.Scan(&id)
-									report.ErrLogger(err)
-									_, err = DB.Exec(`DELETE FROM `+table+` WHERE id=?`, id)
-									report.ErrLogger(err)
-								}
-							}
-						}
+						report.ErrLogger(err)
 						field := make(map[string]string)
 						field[f[0]] = f0
 						field[f[1]] = f1
@@ -217,7 +209,8 @@ func GetCurrentSentiments(f []string) *[]types.SentimentRow {
 					}
 				}
 			case 3:
-				row, err := DB.Query(`SELECT `+f[0]+` ,`+f[1]+` ,`+f[2]+` FROM `+table+` WHERE api=? && id=?`, api, id)
+				row, err := DB.Query(`SELECT COALESCE(`+f[0]+`,'') ,COALESCE(`+f[1]+`,'') ,COALESCE(`+f[2]+`,'') FROM `+table+` WHERE api=? && id=?`, api, id)
+				defer row.Close()
 				if err == nil {
 					for row.Next() {
 						var (
@@ -226,19 +219,7 @@ func GetCurrentSentiments(f []string) *[]types.SentimentRow {
 							f2 string
 						)
 						err := row.Scan(&f0, &f1, &f2)
-						if err != nil {
-							//delete the last item
-							row, err := DB.Query(`SELECT id FROM ` + table + ` ORDER BY id DESC LIMIT 1`)
-							if err == nil {
-								for row.Next() {
-									var id string
-									err := row.Scan(&id)
-									report.ErrLogger(err)
-									_, err = DB.Exec(`DELETE FROM `+table+` WHERE id=?`, id)
-									report.ErrLogger(err)
-								}
-							}
-						}
+						report.ErrLogger(err)
 						field := make(map[string]string)
 						field[f[0]] = f0
 						field[f[1]] = f1
@@ -247,7 +228,8 @@ func GetCurrentSentiments(f []string) *[]types.SentimentRow {
 					}
 				}
 			case 4:
-				row, err := DB.Query(`SELECT `+f[0]+` ,`+f[1]+` ,`+f[2]+` ,`+f[3]+` FROM `+table+` WHERE api=? && id=?`, api, id)
+				row, err := DB.Query(`SELECT COALESCE(`+f[0]+`,'') ,COALESCE(`+f[1]+`,'') ,COALESCE(`+f[2]+`,'') ,COALESCE(`+f[3]+`,'') FROM `+table+` WHERE api=? && id=?`, api, id)
+				defer row.Close()
 				if err == nil {
 					for row.Next() {
 						var (
@@ -257,19 +239,7 @@ func GetCurrentSentiments(f []string) *[]types.SentimentRow {
 							f3 string
 						)
 						err := row.Scan(&f0, &f1, &f2, &f3)
-						if err != nil {
-							//delete the last item
-							row, err := DB.Query(`SELECT id FROM ` + table + ` ORDER BY id DESC LIMIT 1`)
-							if err == nil {
-								for row.Next() {
-									var id string
-									err := row.Scan(&id)
-									report.ErrLogger(err)
-									_, err = DB.Exec(`DELETE FROM `+table+` WHERE id=?`, id)
-									report.ErrLogger(err)
-								}
-							}
-						}
+						report.ErrLogger(err)
 						field := make(map[string]string)
 						field[f[0]] = f0
 						field[f[1]] = f1
@@ -279,7 +249,8 @@ func GetCurrentSentiments(f []string) *[]types.SentimentRow {
 					}
 				}
 			case 5:
-				row, err := DB.Query(`SELECT `+f[0]+`,`+f[1]+`,`+f[2]+`,`+f[3]+`,`+f[4]+` FROM `+table+` WHERE api=? && id=?`, api, id)
+				row, err := DB.Query(`SELECT COALESCE(`+f[0]+`,''),COALESCE(`+f[1]+`,'') ,COALESCE(`+f[2]+`,'') ,COALESCE(`+f[3]+`,'') ,COALESCE(`+f[4]+`,'') FROM `+table+` WHERE api=? && id=?`, api, id)
+				defer row.Close()
 				if err == nil {
 					for row.Next() {
 						var (
@@ -290,19 +261,7 @@ func GetCurrentSentiments(f []string) *[]types.SentimentRow {
 							f4 string
 						)
 						err := row.Scan(&f0, &f1, &f2, &f3, &f4)
-						if err != nil {
-							//delete the last item
-							row, err := DB.Query(`SELECT id FROM ` + table + ` ORDER BY id DESC LIMIT 1`)
-							if err == nil {
-								for row.Next() {
-									var id string
-									err := row.Scan(&id)
-									report.ErrLogger(err)
-									_, err = DB.Exec(`DELETE FROM `+table+` WHERE id=?`, id)
-									report.ErrLogger(err)
-								}
-							}
-						}
+						report.ErrLogger(err)
 						field := make(map[string]string)
 						field[f[0]] = f0
 						field[f[1]] = f1
@@ -314,7 +273,8 @@ func GetCurrentSentiments(f []string) *[]types.SentimentRow {
 					}
 				}
 			case 6:
-				row, err := DB.Query(`SELECT `+f[0]+` ,`+f[1]+` ,`+f[2]+` ,`+f[3]+` ,`+f[4]+` ,`+f[5]+` FROM `+table+` WHERE api=? && id=?`, api, id)
+				row, err := DB.Query(`SELECT COALESCE(`+f[0]+`,'') ,COALESCE(`+f[1]+`,'') ,COALESCE(`+f[2]+`,'') ,COALESCE(`+f[3]+`,'') ,COALESCE(`+f[4]+`,'') ,COALESCE(`+f[5]+`,'') FROM `+table+` WHERE api=? && id=?`, api, id)
+				defer row.Close()
 				if err == nil {
 					for row.Next() {
 						var (
@@ -326,19 +286,7 @@ func GetCurrentSentiments(f []string) *[]types.SentimentRow {
 							f5 string
 						)
 						err := row.Scan(&f0, &f1, &f2, &f3, &f4, &f5)
-						if err != nil {
-							//delete the last item
-							row, err := DB.Query(`SELECT id FROM ` + table + ` ORDER BY id DESC LIMIT 1`)
-							if err == nil {
-								for row.Next() {
-									var id string
-									err := row.Scan(&id)
-									report.ErrLogger(err)
-									_, err = DB.Exec(`DELETE FROM `+table+` WHERE id=?`, id)
-									report.ErrLogger(err)
-								}
-							}
-						}
+						report.ErrLogger(err)
 						field := make(map[string]string)
 						field[f[0]] = f0
 						field[f[1]] = f1
@@ -350,7 +298,8 @@ func GetCurrentSentiments(f []string) *[]types.SentimentRow {
 					}
 				}
 			case 7:
-				row, err := DB.Query(`SELECT `+f[0]+` ,`+f[1]+` ,`+f[2]+` ,`+f[3]+` ,`+f[4]+` ,`+f[5]+` ,`+f[6]+` FROM `+table+` WHERE api=? && id=?`, api, id)
+				row, err := DB.Query(`SELECT COALESCE(`+f[0]+`,'') ,COALESCE(`+f[1]+`,'') ,COALESCE(`+f[2]+`,'') ,COALESCE(`+f[3]+`,'') ,COALESCE(`+f[4]+`,'') ,COALESCE(`+f[5]+`,'') ,COALESCE(`+f[6]+`,'') FROM `+table+` WHERE api=? && id=?`, api, id)
+				defer row.Close()
 				if err == nil {
 					for row.Next() {
 						var (
@@ -363,19 +312,7 @@ func GetCurrentSentiments(f []string) *[]types.SentimentRow {
 							f6 string
 						)
 						err := row.Scan(&f0, &f1, &f2, &f3, &f4, &f5, &f6)
-						if err != nil {
-							//delete the last item
-							row, err := DB.Query(`SELECT id FROM ` + table + ` ORDER BY id DESC LIMIT 1`)
-							if err == nil {
-								for row.Next() {
-									var id string
-									err := row.Scan(&id)
-									report.ErrLogger(err)
-									_, err = DB.Exec(`DELETE FROM `+table+` WHERE id=?`, id)
-									report.ErrLogger(err)
-								}
-							}
-						}
+						report.ErrLogger(err)
 						field := make(map[string]string)
 						field[f[0]] = f0
 						field[f[1]] = f1
@@ -388,7 +325,8 @@ func GetCurrentSentiments(f []string) *[]types.SentimentRow {
 					}
 				}
 			case 8:
-				row, err := DB.Query(`SELECT `+f[0]+` ,`+f[1]+` ,`+f[2]+` ,`+f[3]+` ,`+f[4]+` ,`+f[5]+` ,`+f[6]+` ,`+f[7]+` FROM `+table+` WHERE api=? && id=?`, api, id)
+				row, err := DB.Query(`SELECT COALESCE(`+f[0]+`,'') ,COALESCE(`+f[1]+`,'') ,COALESCE(`+f[2]+`,'') ,COALESCE(`+f[3]+`,'') ,COALESCE(`+f[4]+`,'') ,COALESCE(`+f[5]+`,'') ,COALESCE(`+f[6]+`,'') ,COALESCE(`+f[7]+`,'') FROM `+table+` WHERE api=? && id=?`, api, id)
+				defer row.Close()
 				if err == nil {
 					for row.Next() {
 						var (
@@ -402,19 +340,7 @@ func GetCurrentSentiments(f []string) *[]types.SentimentRow {
 							f7 string
 						)
 						err := row.Scan(&f0, &f1, &f2, &f3, &f4, &f5, &f6, &f7)
-						if err != nil {
-							//delete the last item
-							row, err := DB.Query(`SELECT id FROM ` + table + ` ORDER BY id DESC LIMIT 1`)
-							if err == nil {
-								for row.Next() {
-									var id string
-									err := row.Scan(&id)
-									report.ErrLogger(err)
-									_, err = DB.Exec(`DELETE FROM `+table+` WHERE id=?`, id)
-									report.ErrLogger(err)
-								}
-							}
-						}
+						report.ErrLogger(err)
 						field := make(map[string]string)
 						field[f[0]] = f0
 						field[f[1]] = f1
@@ -428,7 +354,8 @@ func GetCurrentSentiments(f []string) *[]types.SentimentRow {
 					}
 				}
 			case 9:
-				row, err := DB.Query(`SELECT `+f[0]+` ,`+f[1]+` ,`+f[2]+` ,`+f[3]+` ,`+f[4]+` ,`+f[5]+` ,`+f[6]+` ,`+f[7]+` ,`+f[8]+` FROM `+table+` WHERE api=? && id=?`, api, id)
+				row, err := DB.Query(`SELECT COALESCE(`+f[0]+`,'') ,COALESCE(`+f[1]+`,'') ,COALESCE(`+f[2]+`,'') ,COALESCE(`+f[3]+`,'') ,COALESCE(`+f[4]+`,'') ,COALESCE(`+f[5]+`,'') ,COALESCE(`+f[6]+`,'') ,COALESCE(`+f[7]+`,'') ,COALESCE(`+f[8]+`,'') FROM `+table+` WHERE api=? && id=?`, api, id)
+				defer row.Close()
 				if err == nil {
 					for row.Next() {
 						var (
@@ -443,19 +370,7 @@ func GetCurrentSentiments(f []string) *[]types.SentimentRow {
 							f8 string
 						)
 						err := row.Scan(&f0, &f1, &f2, &f3, &f4, &f5, &f6, &f7, &f8)
-						if err != nil {
-							//delete the last item
-							row, err := DB.Query(`SELECT id FROM ` + table + ` ORDER BY id DESC LIMIT 1`)
-							if err == nil {
-								for row.Next() {
-									var id string
-									err := row.Scan(&id)
-									report.ErrLogger(err)
-									_, err = DB.Exec(`DELETE FROM `+table+` WHERE id=?`, id)
-									report.ErrLogger(err)
-								}
-							}
-						}
+						report.ErrLogger(err)
 						field := make(map[string]string)
 						field[f[0]] = f0
 						field[f[1]] = f1
@@ -470,7 +385,8 @@ func GetCurrentSentiments(f []string) *[]types.SentimentRow {
 					}
 				}
 			case 10:
-				row, err := DB.Query(`SELECT `+f[0]+` ,`+f[1]+` ,`+f[2]+` ,`+f[3]+` ,`+f[4]+` ,`+f[5]+` ,`+f[6]+` ,`+f[7]+` ,`+f[8]+` ,`+f[9]+` FROM `+table+` WHERE api=? && id=?`, api, id)
+				row, err := DB.Query(`SELECT COALESCE(`+f[0]+`,'') ,COALESCE(`+f[1]+`,'') ,COALESCE(`+f[2]+`,'') ,COALESCE(`+f[3]+`,'') ,COALESCE(`+f[4]+`,'') ,COALESCE(`+f[5]+`,'') ,COALESCE(`+f[6]+`,'') ,COALESCE(`+f[7]+`,'') ,COALESCE(`+f[8]+`,'') ,COALESCE(`+f[9]+`,'') FROM `+table+` WHERE api=? && id=?`, api, id)
+				defer row.Close()
 				if err == nil {
 					for row.Next() {
 						var (
@@ -486,19 +402,7 @@ func GetCurrentSentiments(f []string) *[]types.SentimentRow {
 							f9 string
 						)
 						err := row.Scan(&f0, &f1, &f2, &f3, &f4, &f5, &f6, &f7, &f8, &f9)
-						if err != nil {
-							//delete the last item
-							row, err := DB.Query(`SELECT id FROM ` + table + ` ORDER BY id DESC LIMIT 1`)
-							if err == nil {
-								for row.Next() {
-									var id string
-									err := row.Scan(&id)
-									report.ErrLogger(err)
-									_, err = DB.Exec(`DELETE FROM `+table+` WHERE id=?`, id)
-									report.ErrLogger(err)
-								}
-							}
-						}
+						report.ErrLogger(err)
 						field := make(map[string]string)
 						field[f[0]] = f0
 						field[f[1]] = f1

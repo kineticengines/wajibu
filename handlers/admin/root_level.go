@@ -32,25 +32,25 @@ import (
 	"github.com/daviddexter/wajibu/server/dbase"
 )
 
-func getHouseLevelRepSlots(d struct{ HouseName string }) *types.GetHouseSlotsData {
+func getRootLevelReps(h struct{ GovName string }) *types.GetHouseSlotsData {
 	var wg sync.WaitGroup
 	var rAll types.GetHouseSlotsData
 	wg.Add(2)
-	go func(house string) {
+	go func(gov string) {
 		//get slotnames from db
 		defer wg.Done()
-		rAll.Slots = *dbase.GetRepSlotsForHouse(house)
-	}(d.HouseName)
-	go func(house string) {
+		rAll.Slots = *dbase.GetRepSlotsForRoot(gov)
+	}(h.GovName)
+	go func(gov string) {
 		//get slot designation from db
 		defer wg.Done()
-		rAll.Designation = *dbase.GetRepSlotsForHouseDesignation(house)
-	}(d.HouseName)
+		rAll.Designation = *dbase.GetRepSlotsForRootDesignation(gov)
+	}(h.GovName)
 	wg.Wait()
 	return &rAll
 }
 
-func houseLevelConfigurer(h struct {
+func rootLevelConfigurer(h struct {
 	Designation string
 	Type        string
 	Data        struct {
@@ -74,6 +74,7 @@ func houseLevelConfigurer(h struct {
 	go func() {
 		//get locations => same as represeneted slot
 		defer wg.Done()
+		//repSlots = *dbase.GetSlotsRepForRoot(h.Data.SlotName)
 		s := make(map[string]string)
 		s[h.Designation] = h.Data.SlotName
 		repSlots = s
@@ -131,5 +132,4 @@ func houseLevelConfigurer(h struct {
 	Configuration.Config = append(Configuration.Config, ButtonConfig)
 
 	return &Configuration
-
 }

@@ -34,6 +34,7 @@ import { InfoBoxComponent } from "./pages/index/general/info-box/info.box.compon
 import { SentimentBoxComponent } from "./pages/index/general/sentiment-box/sentiment.box.component";
 import { TopBoxComponent } from "./pages/index/general/top-box/top.box.component";
 import { FilterComponent } from "./pages/index/filter/filter.component";
+import { FilterTopBoxComponent } from "./pages/index/filter/filter-top-box/filter.top.box.component";
 
 import { NotFoundComponent } from "./pages/not-found/not.found.component";
 
@@ -56,7 +57,7 @@ export const ServerURL:string = 'http://localhost:5678'
 
 export const appComponents = [
     RootComponent,IndexCompenent,GeneralComponent,ChartBoxComponent,FilterBoxComponent,InfoBoxComponent,
-    SentimentBoxComponent,TopBoxComponent,FilterComponent,NotFoundComponent
+    SentimentBoxComponent,TopBoxComponent,FilterComponent,NotFoundComponent,FilterTopBoxComponent
 ]
 
 export const appPipes = [

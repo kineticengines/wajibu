@@ -4,9 +4,10 @@ import { trigger, style,animate,transition,keyframes} from "@angular/animations"
 @Component({
     selector:"top-box",
     template:`
-        <div class="container" [@topBoxAnim]>
+        <nav class="container" [@topBoxAnim]>
             <div class="container-item">
-                <h2>Wajibu</h2>
+                <!--<h2>Wajibu</h2>-->
+                <img src="./assets/logo.png" class="logo"> 
             </div>
             <div class="container-item">
                 <md-input-container class="search">
@@ -19,7 +20,7 @@ import { trigger, style,animate,transition,keyframes} from "@angular/animations"
                     <a href="https://twitter.com" target="_blank" class="container-item-social-item link">Twitter</a>
                 </div>                
             </div>
-        </div>
+        </nav>
         
     `,
     styleUrls:["./top.box.component.css"],

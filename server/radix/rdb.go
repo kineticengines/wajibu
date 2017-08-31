@@ -60,6 +60,7 @@ const (
 	PILLARS              string = "pillars"          //key to a set
 	TITLES               string = "titles"           //key to a set
 	HOUSES               string = "houses"           //key to a set
+	SUBGOVS              string = "subgovs"          //key to a set
 	SENTIMENT            string = "sentiments:field" //key to a set
 	SENTIMENT_KEY_PREFIX string = "sentiment:key"    //key to a set
 	SENTIMENT_LIST       string = "sentiment:list"   //key to a list

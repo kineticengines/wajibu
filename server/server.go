@@ -32,6 +32,7 @@ import (
 	_ "net/http/pprof"
 
 	cfg "github.com/daviddexter/wajibu/configure"
+	"github.com/daviddexter/wajibu/server/bg"
 	"github.com/daviddexter/wajibu/server/dbase"
 	"github.com/daviddexter/wajibu/server/radix"
 	"github.com/daviddexter/wajibu/server/routes"
@@ -59,6 +60,6 @@ func main() {
 	}
 
 	fmt.Println(licenseNote)
-	//go bg.StartBG()
+	go bg.StartBG()
 	serve.ListenAndServe()
 }

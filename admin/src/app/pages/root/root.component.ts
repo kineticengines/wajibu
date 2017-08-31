@@ -58,8 +58,8 @@ export class RootComponent implements OnInit {
   ngOnInit(){
     this.createForm()
     this.processing = true;
-    this.ref.detectChanges();
-    this.initializer.getDefaultCred().subscribe(d => this.checkDefault(d))     
+    this.initializer.getDefaultCred().subscribe(d => this.checkDefault(d))
+    this.ref.detectChanges();         
   }
   createForm(){
     this.loginForm = this.formBuilder.group({
@@ -69,12 +69,12 @@ export class RootComponent implements OnInit {
   }
   
 
-  checkDefault(d:any){    
+  checkDefault(d:any){     
     if(d.Exists === false){
       this.processing = false;
       this.showProvideEmailForm = true;
       this.ref.detectChanges();      
-    }else{
+    }else if (d.Exists === true){      
       switch (this.sessionChecker.getSession().isSet) {
         case false:
           this.processing = false;
@@ -84,10 +84,9 @@ export class RootComponent implements OnInit {
         case true:
           this.processing = false;
           this.ref.detectChanges();          
-          this.router.navigateByUrl('dash')
+          this.router.navigate(['dash'])
           break;
-      }
-      
+      }   
     }
   }   
 

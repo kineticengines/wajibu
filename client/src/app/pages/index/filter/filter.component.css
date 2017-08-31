@@ -1,0 +1,11 @@
+.container{
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: flex-start;     
+}
+.container-item{
+    flex-basis: auto;   
+   align-self: stretch;  
+}

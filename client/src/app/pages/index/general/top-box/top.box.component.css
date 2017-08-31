@@ -1,3 +1,6 @@
+nav{
+    
+}
 .container{
     display: flex;
     flex-direction: row;
@@ -9,6 +12,14 @@
     flex-grow: 1;
     align-self: center;
 }
+
+.logo{    
+    width: 100px;
+    height: 100px;  
+    margin: 0px; 
+    object-fit: cover; 
+}
+
 .search{
     width: 100%;
 }

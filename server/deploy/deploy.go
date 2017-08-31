@@ -49,7 +49,7 @@ var (
 func Initilizer() {
 	radix.ConnectToRDB()
 	//check the type of government
-	c := checkIfCentralGov()
+	c := CheckIfCentralGov()
 	switch c {
 	case true:
 		isCentralGovernment = true
@@ -71,7 +71,7 @@ func Initilizer() {
 	}
 }
 
-func checkIfCentralGov() bool {
+func CheckIfCentralGov() bool {
 	key := "main:" + radix.BuildOneData
 	res, err := radix.RDB.Cmd("HGETALL", key).Map()
 	report.ErrLogger(err)
