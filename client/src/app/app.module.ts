@@ -27,13 +27,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import { BrowserModule } from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule,ReactiveFormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 import { MaterialModule } from '@angular/material';
+import { FlexLayoutModule } from "@angular/flex-layout";
+import { ChartsModule } from 'ng2-charts';
 import 'hammerjs';
 
 import { AppComponent } from "./app.component";
-import { appComponents,routing,appPipes } from "./app.routing";
+import { appComponents,appEntryComponents,routing,appPipes } from "./app.routing";
 import { AuthGuard } from "./services/auth.guard";
 import { Initializer } from "./services/init.service";
 
@@ -41,9 +43,10 @@ import { Initializer } from "./services/init.service";
   declarations: [
     AppComponent,...appComponents,...appPipes
   ],
+  entryComponents :[...appEntryComponents],
   imports: [
-    BrowserModule,FormsModule,BrowserAnimationsModule,MaterialModule,
-    HttpModule,routing,
+    BrowserModule,FormsModule,ReactiveFormsModule,BrowserAnimationsModule,
+    MaterialModule,ChartsModule,HttpModule,routing
   ],
   providers: [Initializer,AuthGuard],
   bootstrap: [AppComponent]

@@ -64,6 +64,7 @@ const (
 	SENTIMENT            string = "sentiments:field" //key to a set
 	SENTIMENT_KEY_PREFIX string = "sentiment:key"    //key to a set
 	SENTIMENT_LIST       string = "sentiment:list"   //key to a list
+	CACHEDSEARCH         string = "cached:search"
 )
 
 //Common in all builds is a `complete` field which by default of false

@@ -61,7 +61,7 @@ export class RootComponent implements OnInit {
         this.subscribeToDeployCheck()
       }else{
         //change route to index
-        this.router.navigate(["home"])
+        this.router.navigate(["home/dash"])
       } 
     }) 
   }

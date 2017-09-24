@@ -27,6 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package dbase
 
 import (
+	tmpl "text/template"
 	"time"
 
 	"github.com/daviddexter/moment"
@@ -54,7 +55,7 @@ func AddSlotsFromDeploy(slots []types.Slot) *bool {
 		stmt, err := DB.Prepare(`INSERT INTO ` + table + ` SET slotname=?,designation=?,
 		createdDate=?`)
 		report.ErrLogger(err)
-		res, errX := stmt.Exec(v.SlotName, v.Designation, time.Now().String())
+		res, errX := stmt.Exec(tmpl.JSEscapeString(tmpl.HTMLEscapeString(v.SlotName)), tmpl.JSEscapeString(tmpl.HTMLEscapeString(v.Designation)), time.Now().Format("Jan 2, 2006 at 3:04pm MST"))
 		report.ErrLogger(errX)
 		_, errY = res.LastInsertId()
 		report.ErrLogger(errY)
@@ -85,7 +86,7 @@ func AddTitlesFromDeploy(slots []string) *bool {
 		stmt, err := DB.Prepare(`INSERT INTO ` + table + ` SET titlename=?,
 		createdDate=?`)
 		report.ErrLogger(err)
-		res, errX := stmt.Exec(v, time.Now().String())
+		res, errX := stmt.Exec(tmpl.JSEscapeString(tmpl.HTMLEscapeString(v)), time.Now().Format("Jan 2, 2006 at 3:04pm MST"))
 		report.ErrLogger(errX)
 		_, errY = res.LastInsertId()
 		report.ErrLogger(errY)
@@ -136,7 +137,7 @@ func SaveTopLevel(d *[]types.TopPosition, span int) *bool {
 		n := moment.UtilBuilder{moment.ADDOPERATION, moment.YEARLEAP, 5}
 		termend, err := n.Add(time.Now())
 		report.ErrLogger(err)
-		res, errX := stmt.Exec(v.Name, v.Position, v.Term, v.Gender, v.Image, v.NthPosition, v.API, termstart, termend.Year(), time.Now().String())
+		res, errX := stmt.Exec(v.Name, v.Position, v.Term, v.Gender, v.Image, v.NthPosition, v.API, termstart, termend.Year(), time.Now().Format("Jan 2, 2006 at 3:04pm MST"))
 		report.ErrLogger(errX)
 		_, err = res.LastInsertId()
 		if err == nil {
@@ -192,7 +193,7 @@ func SaveHouseLevel(d *[]types.HousePosition, span int) *bool {
 		n := moment.UtilBuilder{moment.ADDOPERATION, moment.YEARLEAP, 5}
 		termend, err := n.Add(time.Now())
 		report.ErrLogger(err)
-		res, errX := stmt.Exec(v.HouseName, v.Title, v.Name, v.Term, v.Gender, v.SlotDesignation, v.SlotName, v.Image, v.API, termstart, termend, time.Now().String())
+		res, errX := stmt.Exec(v.HouseName, v.Title, v.Name, v.Term, v.Gender, v.SlotDesignation, v.SlotName, v.Image, v.API, termstart, termend, time.Now().Format("Jan 2, 2006 at 3:04pm MST"))
 		report.ErrLogger(errX)
 		_, err = res.LastInsertId()
 		if err == nil {
@@ -247,7 +248,7 @@ func SaveSubGovLevel(d *[]types.TopPosition, span int) *bool {
 		n := moment.UtilBuilder{moment.ADDOPERATION, moment.YEARLEAP, 5}
 		termend, err := n.Add(time.Now())
 		report.ErrLogger(err)
-		res, errX := stmt.Exec(v.Name, v.Position, v.Term, v.Gender, v.SlotDesignation, v.SlotName, v.NthPosition, v.Image, v.API, termstart, termend, time.Now().String())
+		res, errX := stmt.Exec(v.Name, v.Position, v.Term, v.Gender, v.SlotDesignation, v.SlotName, v.NthPosition, v.Image, v.API, termstart, termend, time.Now().Format("Jan 2, 2006 at 3:04pm MST"))
 		report.ErrLogger(errX)
 		_, err = res.LastInsertId()
 		if err == nil {
@@ -306,7 +307,7 @@ func SaveGrassRootGovLevel(d *[]types.HousePosition, span int) *bool {
 		n := moment.UtilBuilder{moment.ADDOPERATION, moment.YEARLEAP, 5}
 		termend, err := n.Add(time.Now())
 		report.ErrLogger(err)
-		res, errX := stmt.Exec(v.HouseName, v.Title, v.Name, v.Term, v.Gender, v.SlotDesignation, v.SlotName, v.LegOf, v.NthPosition, v.Image, v.API, termstart, termend, time.Now().String())
+		res, errX := stmt.Exec(v.HouseName, v.Title, v.Name, v.Term, v.Gender, v.SlotDesignation, v.SlotName, v.LegOf, v.NthPosition, v.Image, v.API, termstart, termend, time.Now().Format("Jan 2, 2006 at 3:04pm MST"))
 		report.ErrLogger(errX)
 		_, err = res.LastInsertId()
 		if err == nil {

@@ -28,24 +28,40 @@ import { RouterModule, Routes } from "@angular/router";
 import { RootComponent } from './pages/root/root.component';
 import { IndexCompenent } from "./pages/index/index.component";
 import { GeneralComponent} from "./pages/index/general/general.component"
-import { ChartBoxComponent } from "./pages/index/general/chart-box/chart.box.component";
+import { ChartBoxComponent } from "./pages/index/general/home-main/chart-box/chart.box.component";
 import { FilterBoxComponent } from "./pages/index/general/filter-box/filter.box.component";
 import { InfoBoxComponent } from "./pages/index/general/info-box/info.box.component";
-import { SentimentBoxComponent } from "./pages/index/general/sentiment-box/sentiment.box.component";
+import { SentimentBoxComponent } from "./pages/index/general/home-main/sentiment-box/sentiment.box.component";
 import { TopBoxComponent } from "./pages/index/general/top-box/top.box.component";
 import { FilterComponent } from "./pages/index/filter/filter.component";
-import { FilterTopBoxComponent } from "./pages/index/filter/filter-top-box/filter.top.box.component";
-
+import { HomeMainComponent } from "./pages/index/general/home-main/home.main.component";
+import { LocaleBoxComponent } from "./pages/index/general/home-main/locale-box/locale.box.component";
+import { LinksBoxComponent } from "./pages/index/general/links-box/links.box.component";
+import { SearchResultDialogComponent } from "./pages/index/general/search-result-dialog/search.result.dialog";
 import { NotFoundComponent } from "./pages/not-found/not.found.component";
+
+import { StatComponent } from "./pages/index/stat/stat.component";
+import { StatGenderComponent } from "./pages/index/stat/gender/gender.component";
+import { StatNthComponent } from "./pages/index/stat/nth/nth.component";
+import { StatPillarComponent } from "./pages/index/stat/pillar/pillar.component";
 
 import { AuthGuard } from "./services/auth.guard";
 
+
+
 const routes:Routes = [    
     { path: '', redirectTo: 'init', pathMatch: 'full' },
-    { path: 'init', component: RootComponent },
+    { path: 'init', component: RootComponent },    
     {path:'home',canActivate:[AuthGuard],component:IndexCompenent,children:[
-        {path:"",component:GeneralComponent},
-        {path:"fan/:who",component:FilterComponent},
+        {path:"dash",component:GeneralComponent,children:[
+            {path:"",component:HomeMainComponent},
+            {path:"fan/:who",component:FilterComponent},
+            {path:"stats",component:StatComponent,children:[
+                {path:"",component:StatPillarComponent},
+                {path:"gender",component:StatGenderComponent},
+                {path:"nth",component:StatNthComponent}                
+            ]}
+        ]},        
         {path:"**",component:NotFoundComponent} 
     ]},
     {path:"**",component:NotFoundComponent}    
@@ -56,10 +72,15 @@ export const routing = RouterModule.forRoot(routes);
 export const ServerURL:string = 'http://localhost:5678'
 
 export const appComponents = [
-    RootComponent,IndexCompenent,GeneralComponent,ChartBoxComponent,FilterBoxComponent,InfoBoxComponent,
-    SentimentBoxComponent,TopBoxComponent,FilterComponent,NotFoundComponent,FilterTopBoxComponent
+    RootComponent,IndexCompenent,GeneralComponent,ChartBoxComponent,FilterBoxComponent,
+    InfoBoxComponent,LocaleBoxComponent,SentimentBoxComponent,TopBoxComponent,LinksBoxComponent,
+    FilterComponent,NotFoundComponent,HomeMainComponent,SearchResultDialogComponent,StatComponent,
+    StatGenderComponent,StatNthComponent,StatPillarComponent
 ]
 
+export const appEntryComponents = [
+   SearchResultDialogComponent 
+]
 export const appPipes = [
     
 ]

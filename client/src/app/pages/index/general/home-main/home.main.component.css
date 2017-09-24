@@ -1,0 +1,31 @@
+.container{   
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+.container-item{
+   flex-basis: auto;   
+   align-self: stretch;
+}
+
+.oneth{
+    flex-grow: 1;
+    flex-basis: 60%; 
+}
+.twoth{
+    flex-grow: 1;
+     flex-basis: 40%; 
+}
+
+@media only screen and (max-width: 820px){   
+    
+    .container{   
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+}

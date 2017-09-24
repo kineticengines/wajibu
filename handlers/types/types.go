@@ -218,3 +218,32 @@ type GetHouseSlotsData struct {
 	Designation string   `json:"designation"`
 	Slots       []string `json:"slots"`
 }
+
+type QueryType struct {
+	Type   string
+	IsTrue bool
+	Value  string
+}
+
+type LevelType struct {
+	IsTrue bool
+	API    string
+	Level  string
+}
+
+type BioData struct {
+	Name     string
+	Position string
+	API      string
+}
+
+type ContentData struct {
+	Title string              `json:"title"`
+	Name  string              `json:"name"`
+	Data  []map[string]string `json:"data"`
+}
+
+type ContentDataAll struct {
+	Length  int           `json:"length"`
+	Content []ContentData `json:"content"`
+}

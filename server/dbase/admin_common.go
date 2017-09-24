@@ -27,8 +27,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package dbase
 
 import (
-	"log"
 	"sync"
+	tmpl "text/template"
 	"time"
 
 	cfg "github.com/daviddexter/wajibu/configure"
@@ -234,7 +234,7 @@ func GetPillarsFor(level interface{}) *[]string {
 		switch dd.Type {
 		case "houseslot":
 			var title string
-			row, err := DB.Query(`SELECT DISTINCT(title) FROM `+cfg.Loader().HouseLevelTable+` WHERE slotdesignation=? AND slotname=?`, dd.Designation, dd.Data.SlotName)
+			row, err := DB.Query(`SELECT DISTINCT(title) FROM `+cfg.Loader().HouseLevelTable+` WHERE slotdesignation=? AND slotname=?`, tmpl.JSEscapeString(tmpl.HTMLEscapeString(dd.Designation)), tmpl.JSEscapeString(tmpl.HTMLEscapeString(dd.Data.SlotName)))
 			defer row.Close()
 			if err == nil {
 				for row.Next() {
@@ -260,9 +260,7 @@ func GetPillarsFor(level interface{}) *[]string {
 			}
 		case "rootslot":
 			var title string
-			log.Println(dd.Designation)
-			log.Println(dd.Data.SlotName)
-			row, err := DB.Query(`SELECT DISTINCT(title) FROM `+cfg.Loader().GrassRootLevelTable+` WHERE slotdesignation=? AND slotname=?`, dd.Designation, dd.Data.SlotName)
+			row, err := DB.Query(`SELECT DISTINCT(title) FROM `+cfg.Loader().GrassRootLevelTable+` WHERE slotdesignation=? AND slotname=?`, tmpl.JSEscapeString(tmpl.HTMLEscapeString(dd.Designation)), tmpl.JSEscapeString(tmpl.HTMLEscapeString(dd.Data.SlotName)))
 			defer row.Close()
 			if err == nil {
 				for row.Next() {
@@ -282,7 +280,6 @@ func GetPillarsFor(level interface{}) *[]string {
 						err := rows.Scan(&pillar)
 						if err == nil {
 							r = append(r, pillar)
-							//log.Println(pillar)
 						}
 					}
 				}
@@ -291,7 +288,7 @@ func GetPillarsFor(level interface{}) *[]string {
 	case struct{ GovName string }:
 		//configure for subgovlevel
 		var title string
-		row, err := DB.Query(`SELECT DISTINCT(position) FROM `+cfg.Loader().SubGovLevelTable+` WHERE slotname=?`, dd.GovName)
+		row, err := DB.Query(`SELECT DISTINCT(position) FROM `+cfg.Loader().SubGovLevelTable+` WHERE slotname=?`, tmpl.JSEscapeString(tmpl.HTMLEscapeString(dd.GovName)))
 		defer row.Close()
 		if err == nil {
 			for row.Next() {
@@ -330,7 +327,7 @@ func NewPillar(d string, e string) *bool {
 	// insert
 	stmt, errI := DB.Prepare(`INSERT IGNORE INTO ` + table + ` (pillar,fortitle,createdAt) values(?,?,?)`)
 	report.ErrLogger(errI)
-	res, _ := stmt.Exec(d, e, time.Now())
+	res, _ := stmt.Exec(tmpl.JSEscapeString(tmpl.HTMLEscapeString(d)), tmpl.JSEscapeString(tmpl.HTMLEscapeString(e)), time.Now())
 	_, errL := res.LastInsertId()
 	if errL == nil {
 		r = true
@@ -345,7 +342,7 @@ func RemovePillar(d string) *bool {
 	table := cfg.Loader().PillarsTable
 	stmt, err := DB.Prepare(`DELETE FROM ` + table + ` WHERE pillar=? `)
 	report.ErrLogger(err)
-	res, _ := stmt.Exec(d)
+	res, _ := stmt.Exec(tmpl.JSEscapeString(tmpl.HTMLEscapeString(d)))
 	_, errL := res.LastInsertId()
 	if errL == nil {
 		r = true
@@ -393,7 +390,7 @@ func GetRepSlots() *map[string][]string {
 
 func GetRepSlotDesignationForSubGov(s string) *string {
 	var t string
-	row, err := DB.Query(`SELECT DISTINCT(slotdesignation) FROM `+cfg.Loader().SubGovLevelTable+` WHERE slotname=?`, s)
+	row, err := DB.Query(`SELECT DISTINCT(slotdesignation) FROM `+cfg.Loader().SubGovLevelTable+` WHERE slotname=?`, tmpl.JSEscapeString(tmpl.HTMLEscapeString(s)))
 	defer row.Close()
 	if err == nil {
 		for row.Next() {
@@ -410,7 +407,7 @@ func GetAPIofForLevelAndImage(d interface{}) *map[string]string {
 	switch dd := d.(type) {
 	case string:
 		table := cfg.Loader().TopLevelTable
-		rows, err := DB.Query(`SELECT api,imageurl FROM `+table+` WHERE position=?`, dd)
+		rows, err := DB.Query(`SELECT api,imageurl FROM `+table+` WHERE position=?`, tmpl.JSEscapeString(tmpl.HTMLEscapeString(dd)))
 		defer rows.Close()
 		if err == nil {
 			for rows.Next() {
@@ -430,7 +427,7 @@ func GetAPIofForLevelAndImage(d interface{}) *map[string]string {
 		switch dd.Type {
 		case "houseslot":
 			table := cfg.Loader().HouseLevelTable
-			rows, err := DB.Query(`SELECT api,imageurl FROM `+table+` WHERE slotdesignation =? AND slotname=?`, dd.Designation, dd.Data.SlotName)
+			rows, err := DB.Query(`SELECT api,imageurl FROM `+table+` WHERE slotdesignation =? AND slotname=?`, tmpl.JSEscapeString(tmpl.HTMLEscapeString(dd.Designation)), tmpl.JSEscapeString(tmpl.HTMLEscapeString(dd.Data.SlotName)))
 			defer rows.Close()
 			if err == nil {
 				for rows.Next() {
@@ -442,7 +439,7 @@ func GetAPIofForLevelAndImage(d interface{}) *map[string]string {
 			m["image"] = theImage
 		case "rootslot":
 			table := cfg.Loader().GrassRootLevelTable
-			rows, err := DB.Query(`SELECT api,imageurl FROM `+table+` WHERE slotdesignation =? AND slotname=?`, dd.Designation, dd.Data.SlotName)
+			rows, err := DB.Query(`SELECT api,imageurl FROM `+table+` WHERE slotdesignation =? AND slotname=?`, tmpl.JSEscapeString(tmpl.HTMLEscapeString(dd.Designation)), tmpl.JSEscapeString(tmpl.HTMLEscapeString(dd.Data.SlotName)))
 			defer rows.Close()
 			if err == nil {
 				for rows.Next() {
@@ -456,7 +453,7 @@ func GetAPIofForLevelAndImage(d interface{}) *map[string]string {
 
 	case struct{ GovName string }:
 		table := cfg.Loader().SubGovLevelTable
-		rows, err := DB.Query(`SELECT api,imageurl FROM `+table+` WHERE slotname=?`, dd.GovName)
+		rows, err := DB.Query(`SELECT api,imageurl FROM `+table+` WHERE slotname=?`, tmpl.JSEscapeString(tmpl.HTMLEscapeString(dd.GovName)))
 		defer rows.Close()
 		if err == nil {
 			for rows.Next() {
@@ -474,7 +471,7 @@ func GetAPIofForLevelAndImage(d interface{}) *map[string]string {
 func GetRepSlotsForHouse(house string) *[]string {
 	var rAll []string
 	table := cfg.Loader().HouseLevelTable
-	rows, err := DB.Query(`SELECT DISTINCT slotname FROM `+table+` WHERE housename=?`, house)
+	rows, err := DB.Query(`SELECT DISTINCT slotname FROM `+table+` WHERE housename=?`, tmpl.JSEscapeString(tmpl.HTMLEscapeString(house)))
 	defer rows.Close()
 	if err == nil {
 		for rows.Next() {
@@ -490,7 +487,7 @@ func GetRepSlotsForHouse(house string) *[]string {
 func GetRepSlotsForHouseDesignation(house string) *string {
 	var rAll string
 	table := cfg.Loader().HouseLevelTable
-	rows, err := DB.Query(`SELECT DISTINCT slotdesignation FROM `+table+` WHERE housename=?`, house)
+	rows, err := DB.Query(`SELECT DISTINCT slotdesignation FROM `+table+` WHERE housename=?`, tmpl.JSEscapeString(tmpl.HTMLEscapeString(house)))
 	defer rows.Close()
 	if err == nil {
 		for rows.Next() {
@@ -505,7 +502,7 @@ func GetRepSlotsForHouseDesignation(house string) *string {
 func GetRepSlotsForRoot(gov string) *[]string {
 	var rAll []string
 	table := cfg.Loader().GrassRootLevelTable
-	rows, err := DB.Query(`SELECT DISTINCT slotname FROM `+table+` WHERE legof=?`, gov)
+	rows, err := DB.Query(`SELECT DISTINCT slotname FROM `+table+` WHERE legof=?`, tmpl.JSEscapeString(tmpl.HTMLEscapeString(gov)))
 	defer rows.Close()
 	if err == nil {
 		for rows.Next() {
@@ -522,7 +519,7 @@ func GetRepSlotsForRoot(gov string) *[]string {
 func GetRepSlotsForRootDesignation(gov string) *string {
 	var rAll string
 	table := cfg.Loader().GrassRootLevelTable
-	rows, err := DB.Query(`SELECT DISTINCT slotdesignation FROM `+table+` WHERE legof=?`, gov)
+	rows, err := DB.Query(`SELECT DISTINCT slotdesignation FROM `+table+` WHERE legof=?`, tmpl.JSEscapeString(tmpl.HTMLEscapeString(gov)))
 	defer rows.Close()
 	if err == nil {
 		for rows.Next() {

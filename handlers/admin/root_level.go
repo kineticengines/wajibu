@@ -27,6 +27,7 @@ package admin
 
 import (
 	"sync"
+	tmpl "text/template"
 
 	"github.com/daviddexter/wajibu/handlers/types"
 	"github.com/daviddexter/wajibu/server/dbase"
@@ -40,12 +41,12 @@ func getRootLevelReps(h struct{ GovName string }) *types.GetHouseSlotsData {
 		//get slotnames from db
 		defer wg.Done()
 		rAll.Slots = *dbase.GetRepSlotsForRoot(gov)
-	}(h.GovName)
+	}(tmpl.JSEscapeString(tmpl.HTMLEscapeString(h.GovName)))
 	go func(gov string) {
 		//get slot designation from db
 		defer wg.Done()
 		rAll.Designation = *dbase.GetRepSlotsForRootDesignation(gov)
-	}(h.GovName)
+	}(tmpl.JSEscapeString(tmpl.HTMLEscapeString(h.GovName)))
 	wg.Wait()
 	return &rAll
 }
@@ -76,7 +77,7 @@ func rootLevelConfigurer(h struct {
 		defer wg.Done()
 		//repSlots = *dbase.GetSlotsRepForRoot(h.Data.SlotName)
 		s := make(map[string]string)
-		s[h.Designation] = h.Data.SlotName
+		s[h.Designation] = tmpl.JSEscapeString(tmpl.HTMLEscapeString(h.Data.SlotName))
 		repSlots = s
 	}()
 	go func() {
@@ -111,7 +112,7 @@ func rootLevelConfigurer(h struct {
 	Configuration.Config = append(Configuration.Config, PillarsConfig)
 
 	var SentimentConfig types.FormConfig
-	SentimentConfig.Type = "input"
+	SentimentConfig.Type = "textarea"
 	SentimentConfig.Name = "sentiment"
 	SentimentConfig.Placeholder = "respondent sentiment"
 	Configuration.Config = append(Configuration.Config, SentimentConfig)

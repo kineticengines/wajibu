@@ -17,5 +17,21 @@
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
     padding: 5px;  
-    max-height: 500px; 
+    min-height: 750px; 
+}
+.chart-item{
+    position:relative;
+    height:28vh;
+    width:28vw;
+}
+
+@media only screen and (max-width: 820px){
+    .chart-box{
+       border-width: 0px;
+    }
+    .chart-item{
+        position:relative;
+        height:40vh;
+        width:80vw;
+    }
 }

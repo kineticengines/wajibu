@@ -27,7 +27,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package dbase
 
 import (
-	"log"
 	"reflect"
 	"strconv"
 	"time"
@@ -96,7 +95,8 @@ func AddSentimentToDB(d types.NewSentiment) *bool {
 	db, _ := DB.Begin()
 	stmt, errI := db.Prepare(`INSERT INTO ` + table + ` (api,createdDate,image) values(?,?,?)`)
 	report.ErrLogger(errI)
-	res, _ := stmt.Exec(d.API, time.Now().Local().String(), d.Image)
+	t := time.Now()
+	res, _ := stmt.Exec(d.API, t.Format("Jan 2, 2006 at 3:04pm MST"), d.Image)
 	lastID, errL := res.LastInsertId()
 	if errL != nil {
 		db.Rollback()
@@ -109,7 +109,6 @@ func AddSentimentToDB(d types.NewSentiment) *bool {
 		case string:
 			if len(dd) != 0 {
 				notEmpty++
-				log.Println(key)
 				db, _ := DB.Begin()
 				updateStmt, errU := DB.Prepare(`UPDATE ` + table + ` SET ` + key + `=? WHERE id=?`)
 				report.ErrLogger(errU)
@@ -191,6 +190,7 @@ func GetCurrentSentiments(f []string) *[]types.SentimentRow {
 						dataRow.Fields = append(dataRow.Fields, field)
 					}
 				}
+				break
 			case 2:
 				row, err := DB.Query(`SELECT COALESCE(`+f[0]+`,'') ,COALESCE(`+f[1]+`,'') FROM `+table+` WHERE api=? && id=?`, api, id)
 				defer row.Close()
@@ -208,6 +208,7 @@ func GetCurrentSentiments(f []string) *[]types.SentimentRow {
 						dataRow.Fields = append(dataRow.Fields, field)
 					}
 				}
+				break
 			case 3:
 				row, err := DB.Query(`SELECT COALESCE(`+f[0]+`,'') ,COALESCE(`+f[1]+`,'') ,COALESCE(`+f[2]+`,'') FROM `+table+` WHERE api=? && id=?`, api, id)
 				defer row.Close()
@@ -227,6 +228,7 @@ func GetCurrentSentiments(f []string) *[]types.SentimentRow {
 						dataRow.Fields = append(dataRow.Fields, field)
 					}
 				}
+				break
 			case 4:
 				row, err := DB.Query(`SELECT COALESCE(`+f[0]+`,'') ,COALESCE(`+f[1]+`,'') ,COALESCE(`+f[2]+`,'') ,COALESCE(`+f[3]+`,'') FROM `+table+` WHERE api=? && id=?`, api, id)
 				defer row.Close()
@@ -248,6 +250,7 @@ func GetCurrentSentiments(f []string) *[]types.SentimentRow {
 						dataRow.Fields = append(dataRow.Fields, field)
 					}
 				}
+				break
 			case 5:
 				row, err := DB.Query(`SELECT COALESCE(`+f[0]+`,''),COALESCE(`+f[1]+`,'') ,COALESCE(`+f[2]+`,'') ,COALESCE(`+f[3]+`,'') ,COALESCE(`+f[4]+`,'') FROM `+table+` WHERE api=? && id=?`, api, id)
 				defer row.Close()
@@ -272,6 +275,7 @@ func GetCurrentSentiments(f []string) *[]types.SentimentRow {
 						dataRow.Fields = append(dataRow.Fields, field)
 					}
 				}
+				break
 			case 6:
 				row, err := DB.Query(`SELECT COALESCE(`+f[0]+`,'') ,COALESCE(`+f[1]+`,'') ,COALESCE(`+f[2]+`,'') ,COALESCE(`+f[3]+`,'') ,COALESCE(`+f[4]+`,'') ,COALESCE(`+f[5]+`,'') FROM `+table+` WHERE api=? && id=?`, api, id)
 				defer row.Close()
@@ -297,6 +301,7 @@ func GetCurrentSentiments(f []string) *[]types.SentimentRow {
 						dataRow.Fields = append(dataRow.Fields, field)
 					}
 				}
+				break
 			case 7:
 				row, err := DB.Query(`SELECT COALESCE(`+f[0]+`,'') ,COALESCE(`+f[1]+`,'') ,COALESCE(`+f[2]+`,'') ,COALESCE(`+f[3]+`,'') ,COALESCE(`+f[4]+`,'') ,COALESCE(`+f[5]+`,'') ,COALESCE(`+f[6]+`,'') FROM `+table+` WHERE api=? && id=?`, api, id)
 				defer row.Close()
@@ -324,6 +329,7 @@ func GetCurrentSentiments(f []string) *[]types.SentimentRow {
 						dataRow.Fields = append(dataRow.Fields, field)
 					}
 				}
+				break
 			case 8:
 				row, err := DB.Query(`SELECT COALESCE(`+f[0]+`,'') ,COALESCE(`+f[1]+`,'') ,COALESCE(`+f[2]+`,'') ,COALESCE(`+f[3]+`,'') ,COALESCE(`+f[4]+`,'') ,COALESCE(`+f[5]+`,'') ,COALESCE(`+f[6]+`,'') ,COALESCE(`+f[7]+`,'') FROM `+table+` WHERE api=? && id=?`, api, id)
 				defer row.Close()
@@ -353,6 +359,7 @@ func GetCurrentSentiments(f []string) *[]types.SentimentRow {
 						dataRow.Fields = append(dataRow.Fields, field)
 					}
 				}
+				break
 			case 9:
 				row, err := DB.Query(`SELECT COALESCE(`+f[0]+`,'') ,COALESCE(`+f[1]+`,'') ,COALESCE(`+f[2]+`,'') ,COALESCE(`+f[3]+`,'') ,COALESCE(`+f[4]+`,'') ,COALESCE(`+f[5]+`,'') ,COALESCE(`+f[6]+`,'') ,COALESCE(`+f[7]+`,'') ,COALESCE(`+f[8]+`,'') FROM `+table+` WHERE api=? && id=?`, api, id)
 				defer row.Close()
@@ -384,6 +391,7 @@ func GetCurrentSentiments(f []string) *[]types.SentimentRow {
 						dataRow.Fields = append(dataRow.Fields, field)
 					}
 				}
+				break
 			case 10:
 				row, err := DB.Query(`SELECT COALESCE(`+f[0]+`,'') ,COALESCE(`+f[1]+`,'') ,COALESCE(`+f[2]+`,'') ,COALESCE(`+f[3]+`,'') ,COALESCE(`+f[4]+`,'') ,COALESCE(`+f[5]+`,'') ,COALESCE(`+f[6]+`,'') ,COALESCE(`+f[7]+`,'') ,COALESCE(`+f[8]+`,'') ,COALESCE(`+f[9]+`,'') FROM `+table+` WHERE api=? && id=?`, api, id)
 				defer row.Close()
@@ -417,7 +425,7 @@ func GetCurrentSentiments(f []string) *[]types.SentimentRow {
 						dataRow.Fields = append(dataRow.Fields, field)
 					}
 				}
-
+				break
 			}
 			data = append(data, dataRow)
 		}

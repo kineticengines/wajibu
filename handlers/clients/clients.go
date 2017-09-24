@@ -29,7 +29,9 @@ package clients
 import (
 	"encoding/json"
 	"net/http"
+	tmpl "text/template"
 
+	"github.com/daviddexter/wajibu/handlers/types"
 	"github.com/daviddexter/wajibu/report"
 	"github.com/daviddexter/wajibu/server/radix"
 )
@@ -39,6 +41,60 @@ func FetchCurrentSentiments(w http.ResponseWriter, r *http.Request) {
 	res, err := json.Marshal(struct {
 		All []map[string]string `json:"all"`
 	}{All: *n})
+	report.ErrLogger(err)
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(res)
+	return
+}
+
+func FilterByQuery(w http.ResponseWriter, r *http.Request) {
+	var data struct {
+		Item string
+		Type string
+	}
+	err := json.NewDecoder(r.Body).Decode(&data)
+	report.ErrLogger(err)
+	n, fc := determineTheQueryType(tmpl.JSEscapeString(tmpl.HTMLEscapeString(data.Item)))
+
+	if *fc == true { // means no match was found.Status should be false
+		res, err := json.Marshal(struct {
+			Status bool `json:"status"`
+		}{Status: !*fc})
+		report.ErrLogger(err)
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(res)
+		return
+	}
+	m := querySwitcher(*n, data.Type)
+	res, err := json.Marshal(struct {
+		Status bool                 `json:"status"`
+		Data   types.ContentDataAll `json:"content"`
+	}{Status: true, Data: *m})
+	report.ErrLogger(err)
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(res)
+	return
+}
+
+func CacheTheQuery(w http.ResponseWriter, r *http.Request) {
+	var data struct{ Item string }
+	err := json.NewDecoder(r.Body).Decode(&data)
+	report.ErrLogger(err)
+	n := *radix.CacheQuery(tmpl.JSEscapeString(tmpl.HTMLEscapeString(data.Item)))
+	res, err := json.Marshal(struct {
+		Status bool `json:"status"`
+	}{Status: n})
+	report.ErrLogger(err)
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(res)
+	return
+}
+
+func GetCachedQuery(w http.ResponseWriter, r *http.Request) {
+	n := *radix.GetCachedQueryItems()
+	res, err := json.Marshal(struct {
+		Items []string `json:"items"`
+	}{Items: n})
 	report.ErrLogger(err)
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(res)

@@ -194,6 +194,21 @@ var Routes = routes{
 		Handler: clients.FetchCurrentSentiments,
 	},
 	route{
+		Path:    "/api/init/filter/query",
+		Method:  "POST",
+		Handler: clients.FilterByQuery,
+	},
+	route{
+		Path:    "/api/init/filter/cache/query",
+		Method:  "POST",
+		Handler: clients.CacheTheQuery,
+	},
+	route{
+		Path:    "/api/init/filter/get/cache/query",
+		Method:  "GET",
+		Handler: clients.GetCachedQuery,
+	},
+	route{
 		Path:    "/api/dash/sentiment/get/house/reps",
 		Method:  "POST",
 		Handler: admin.GetHouseRepSlots,

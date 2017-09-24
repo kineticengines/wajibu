@@ -5,21 +5,23 @@ import { Initializer } from "../../../../services/init.service";
 @Component({
     moduleId:module.id,
     selector:"filter-box",
-    template:`             
-        <div class="container list-box">            
+    template:` 
+                
+        <div class="container list-box" [@filterBoxAnim]>            
             <div class="container-item">   
                  <h5>Titles</h5>              
-                <ul *ngFor="let title of titles">
-                    <li><a 	[routerLink]="['../home/fan/',title]">{{title | titlecase}}</a></li>                    
+                <ul>
+                    <li *ngFor="let title of titles"><a	[routerLink]="['fan/',title]">{{title | titlecase}}</a></li>                    
                 </ul>
             </div>
             <div class="container-item">  
                 <h5>Pillars</h5>              
-                <ul *ngFor="let pillar of pillars">
-                    <li><a 	[routerLink]="['../home/fan/',pillar]">{{pillar | titlecase}}</a></li>                    
+                <ul>
+                    <li *ngFor="let pillar of pillars"><a [routerLink]="['fan/',pillar]">{{pillar | titlecase}}</a></li>                    
                 </ul>
             </div>
         </div> 
+        
             
     `,
     styleUrls:["./filter.box.component.css"],
@@ -27,10 +29,10 @@ import { Initializer } from "../../../../services/init.service";
         trigger('filterBoxAnim',[
             transition(':enter',[                           
                 animate('0.9s ease-in',keyframes([
-                    style({opacity: 0,transform:'translate3d(-50%,0,0)',offset:0}),
-                    style({opacity: 0.3,transform:'translate3d(-100%,0, 0)',offset:0.5}),
-                    style({opacity: 0.6,transform:'none',offset:0.7}),
-                    style({opacity: 1,transform:'none',offset:1}),
+                    style({opacity: 0,offset:0}),
+                    style({opacity: 0.3,offset:0.5}),
+                    style({opacity: 0.6,offset:0.7}),
+                    style({opacity: 1,offset:1}),
                 ]))
             ]),
             transition(':leave',[
@@ -47,12 +49,14 @@ export class FilterBoxComponent implements OnInit{
     constructor(private init:Initializer){}
     ngOnInit(){
         this.init.getTitles().subscribe(d => {
+            this.titles.splice(0,this.titles.length)
             d.titles.forEach(element => {
                 this.titles.push(element)
             });
         })
 
-        this.init.getPillars().subscribe(d =>{            
+        this.init.getPillars().subscribe(d =>{   
+            this.pillars.splice(0,this.pillars.length)         
             d.pillars.forEach(e => {
                 this.pillars.push(e.pillar)
             });

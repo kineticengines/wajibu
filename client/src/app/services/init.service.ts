@@ -26,14 +26,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 import { Injectable } from "@angular/core"
-import { Http,Response } from "@angular/http"
+import { Http,Response,Headers,RequestOptions } from "@angular/http"
 
 import { ServerURL } from "../app.routing"
 import { Observable} from "rxjs/Rx";
 import "rxjs/Rx";
 
+
 @Injectable()
-export class Initializer{    
+export class Initializer{  
+     private headers = new Headers({'Content-Type':'application/json'})
+    private options = new RequestOptions({headers:this.headers})
+
     constructor(private http:Http){}
 
     
@@ -70,16 +74,25 @@ export class Initializer{
         return window.localStorage.getItem("get")
     }
 
-    getTitles(){
-        return this.http
-                .get(`${ServerURL}/api/init/get/titles`)
-                .map(this.extractData)   
+    getTitles(){        
+        return Observable.interval(2000)
+                        .startWith(0) 
+                        .switchMap(() => 
+                            this.http
+                                .get(`${ServerURL}/api/init/get/titles`)
+                                .map(this.extractData)  
+                    )         
     }   
             
     getPillars(){
-       return this.http
-                .get(`${ServerURL}/api/dash/fetch/pillars`)
-                .map(this.extractData)  
+       return Observable.interval(2000)
+                        .startWith(0) 
+                        .switchMap(() => 
+                        this.http
+                            .get(`${ServerURL}/api/dash/fetch/pillars`)
+                            .map(this.extractData) 
+                    )
+        
     }
 
     getSentiments(){       
@@ -97,6 +110,31 @@ export class Initializer{
                          
                                           
     }
+
+    getFilterContentData(obj:Object){
+        let OBJ = JSON.stringify(obj) 
+        return this.http.post(`${ServerURL}/api/init/filter/query`,OBJ,this.options)
+                 .map(this.extractData)                                
+                 ._catch(e => Observable.of(e))            
+    }
+
+    cacheTheQuery(obj:Object){
+        let OBJ = JSON.stringify(obj) 
+        return this.http.post(`${ServerURL}/api/init/filter/cache/query`,OBJ,this.options)
+                 .map(this.extractData)                                
+                 ._catch(e => Observable.of(e))
+    }
+
+    getCachedItems(){
+        return this.http
+                .get(`${ServerURL}/api/init/filter/get/cache/query`)
+                .map(this.extractData) 
+                .map(val => {
+                    return val.items
+                })
+                
+    }
+    
 }
 
 class Status{

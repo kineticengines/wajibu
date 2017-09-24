@@ -8,9 +8,7 @@ import { FieldConfig } from '../../models/field-config.interface';
   selector: 'form-text', 
   styleUrls: ['../../dynamic-form.css'], 
   template: `
-    <div [formGroup]="group">
-      <!--<button [disabled]="config.disabled" type="submit"
-       *ngIf="group.valid" md-raised-button class="save-button" >{{ config.label | uppercase}}</button>-->
+    <div [formGroup]="group">      
     </div>
   `
 })

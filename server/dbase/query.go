@@ -29,9 +29,9 @@ package dbase
 import (
 	"database/sql"
 	"strconv"
-	"time"
-
 	"sync"
+	tmpl "text/template"
+	"time"
 
 	"github.com/daviddexter/wajibu/report"
 )
@@ -55,7 +55,7 @@ func DefaultToDB(table string, username string, password string, email string) b
 	stmt, err := DB.Prepare(`INSERT INTO ` + table + ` SET username=?,
 	password=?,email=?,role=?,createdDate=?,createdBy=?`)
 	report.ErrLogger(err)
-	res, err := stmt.Exec(username, password, email, DefaultRole, time.Now(), "Auto Generated")
+	res, err := stmt.Exec(tmpl.JSEscapeString(tmpl.HTMLEscapeString(username)), tmpl.JSEscapeString(tmpl.HTMLEscapeString(password)), tmpl.JSEscapeString(tmpl.HTMLEscapeString(email)), DefaultRole, time.Now().Format("Jan 2, 2006 at 3:04pm MST"), "Auto Generated")
 	report.ErrLogger(err)
 	_, err = res.LastInsertId()
 	report.ErrLogger(err)
@@ -70,7 +70,7 @@ type lQueryRes struct {
 
 func CheckLoginCred(nameoremail string, password string, table string) lQueryRes {
 	wg.Add(2)
-	q := lQueryRes{Param: nameoremail, pass: password}
+	q := lQueryRes{Param: tmpl.JSEscapeString(tmpl.HTMLEscapeString(nameoremail)), pass: password}
 	var uBox lQueryRes
 	var eBox lQueryRes
 	var vBox lQueryRes

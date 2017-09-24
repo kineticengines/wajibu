@@ -110,7 +110,7 @@ func houseLevelConfigurer(h struct {
 	Configuration.Config = append(Configuration.Config, PillarsConfig)
 
 	var SentimentConfig types.FormConfig
-	SentimentConfig.Type = "input"
+	SentimentConfig.Type = "textarea"
 	SentimentConfig.Name = "sentiment"
 	SentimentConfig.Placeholder = "respondent sentiment"
 	Configuration.Config = append(Configuration.Config, SentimentConfig)

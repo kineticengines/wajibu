@@ -26,10 +26,10 @@ import { trigger, style,animate,transition,keyframes} from "@angular/animations"
         trigger('infoBoxAnim',[
             transition(':enter',[                           
                 animate('0.9s ease-in',keyframes([
-                    style({opacity: 0,transform:'translate3d(-50%,0,0)',offset:0}),
-                    style({opacity: 0.3,transform:'translate3d(-100%,0, 0)',offset:0.5}),
-                    style({opacity: 0.6,transform:'none',offset:0.7}),
-                    style({opacity: 1,transform:'none',offset:1}),
+                    style({opacity: 0,offset:0}),
+                    style({opacity: 0.3,offset:0.5}),
+                    style({opacity: 0.6,offset:0.7}),
+                    style({opacity: 1,offset:1}),
                 ]))
             ]),
             transition(':leave',[

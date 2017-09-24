@@ -1,7 +1,7 @@
 /*
-Wajibu is an online web app that collects,analyses, aggregates and visualizes sentiments
-from the public pertaining the government of a nation. This tool allows citizens to contribute
-to the governance talk by airing out their honest views about the state of the nation and in
+Wajibu is an online web app that collects,analyses and aggregates sentiments from the public
+pertaining the government of a nation. This tool allows citizens to contribute to the
+governance talk by airing out their honest views about the state of the nation and in
 particular the people placed in government or leadership positions.
 
 Copyright (C) 2017
@@ -24,16 +24,37 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+package dbase
 
-import { NgModule } from "@angular/core";
-import { MaterialModule } from '@angular/material';
+import (
+	"log"
 
-const AllModules = [   
-    MaterialModule
-]
+	"github.com/daviddexter/wajibu/handlers/types"
+)
 
-@NgModule({
-    imports:[...AllModules],
-    exports:[...AllModules],
-})
-export class CustomMaterialModule { }
+func dataForWhichAPI(bio []types.BioData, data []map[string]string) {
+	distinct(bio)
+}
+
+func distinct(b []types.BioData) {
+	//var d []types.BioData
+	if len(b) != 0 {
+		f := b[0]
+		for i := 1; i < len(b); i++ {
+			switch f.API {
+			case b[i].API:
+				j := i + 1
+				log.Println(b[j:])
+				distinct(b[j:])
+				break
+			default:
+				//d = append(d, f)
+				//log.Println(b[1:])
+				//distinct(b[1:])
+				break
+				
+			}
+		}
+	}
+
+}
