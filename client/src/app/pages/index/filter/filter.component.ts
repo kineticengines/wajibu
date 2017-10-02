@@ -13,6 +13,7 @@ import { Subject } from "rxjs/Subject";
     template:`
         <div class="container" [@filterBoxAnim]>   
             <div class="container-item container-top">
+                <p class="container-top-item" >Filter by: {{filterBy | titlecase }}</p>
                 <a class="container-top-item" [routerLink]="['../..']">Back</a>                
             </div>         
             <div class="container-item">
@@ -97,6 +98,7 @@ export class FilterComponent implements OnInit, OnDestroy{
    sub:any;
    dataNotFound:boolean;
    responsesFound:number;
+   filterBy:any;
    private contentStream:Observable<any>; 
    private contentData:Subject<any>; 
     
@@ -108,6 +110,7 @@ export class FilterComponent implements OnInit, OnDestroy{
    ngOnInit(){
        this.sub = this.aroute.params.subscribe(params => {            
             this.getTheData(params["who"]) 
+            this.filterBy = params["who"];
        })        
    }
 

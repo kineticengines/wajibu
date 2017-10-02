@@ -66,6 +66,7 @@ export class RootComponent implements OnInit {
       nameoremail : ['',[Validators.required]],
       password : ['',[Validators.required,Validators.minLength(6)]]
     })
+    
   }
   
 
