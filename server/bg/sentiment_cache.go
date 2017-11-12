@@ -101,10 +101,10 @@ func workerCache() *bool {
 		for k, val := range s {
 			//PROCESS NEW SENTIMENTS
 			index := k + 1
-			key := radix.SENTIMENT_KEY_PREFIX + ":" + strconv.Itoa(index)
+			key := radix.SENTIMENTKEYPREFIX + ":" + strconv.Itoa(index)
 			err = radix.RDB.Cmd("HMSET", key, "api", val.Key, "date", val.Date, "image", val.Image, val.Fields).Err
 			if err == nil {
-				err = radix.RDB.Cmd("ZADD", radix.SENTIMENT_LIST, "NX", k, key).Err
+				err = radix.RDB.Cmd("ZADD", radix.SENTIMENTLIST, "NX", k, key).Err
 				if err == nil {
 					counter++
 				}
@@ -121,7 +121,7 @@ func workerCache() *bool {
 
 func removeSentimentsHash() {
 	//get current sentiment hash a delete them
-	s, err := radix.RDB.Cmd("KEYS", radix.SENTIMENT_KEY_PREFIX+":*").List()
+	s, err := radix.RDB.Cmd("KEYS", radix.SENTIMENTKEYPREFIX+":*").List()
 	report.ErrLogger(err)
 	for _, sen := range s {
 		_ = radix.RDB.Cmd("DEL", sen).Err
@@ -130,5 +130,5 @@ func removeSentimentsHash() {
 
 func removeSentimentsZSet() {
 	//delete zset key
-	_ = radix.RDB.Cmd("DEL", radix.SENTIMENT_LIST).Err
+	_ = radix.RDB.Cmd("DEL", radix.SENTIMENTLIST).Err
 }

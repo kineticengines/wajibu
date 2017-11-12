@@ -32,7 +32,7 @@ import (
 
 func GetCachedSentiments() *[]map[string]string {
 	var s []map[string]string
-	res, err := RDB.Cmd("ZREVRANGE", SENTIMENT_LIST, "0", "-1").List()
+	res, err := RDB.Cmd("ZREVRANGE", SENTIMENTLIST, "0", "-1").List()
 	report.ErrLogger(err)
 	for _, val := range res {
 		res, err := RDB.Cmd("HGETALL", val).Map()

@@ -103,6 +103,7 @@ func fromAnyLevelTitle(item string) *types.ContentDataAll {
 		r = *dbase.GetSentimentForLevelTitle(n, l)
 	}()
 	wg.Wait()
+	//log.Println(r)
 	return &r
 }
 

@@ -37,6 +37,7 @@ import (
 )
 
 func GetSentimentForLevelTitle(n []types.LevelType, l []string) *types.ContentDataAll {
+	var rALL types.ContentDataAll
 	var m []types.LevelType
 	var wg sync.WaitGroup
 	wg.Add(1)
@@ -51,7 +52,6 @@ func GetSentimentForLevelTitle(n []types.LevelType, l []string) *types.ContentDa
 		}
 	}()
 	wg.Wait()
-	var rALL types.ContentDataAll
 	if len(m) != 0 {
 		var rSum int
 		for _, v := range m {
@@ -64,7 +64,6 @@ func GetSentimentForLevelTitle(n []types.LevelType, l []string) *types.ContentDa
 		rALL.Length = rSum
 	}
 	return &rALL
-
 }
 
 func sentimentsFetcherFromFilterTitle(f []string, n types.LevelType) *types.ContentData {
@@ -90,6 +89,7 @@ func sentimentsFetcherFromFilterTitle(f []string, n types.LevelType) *types.Cont
 			content.Title = strings.ToUpper(r.Position)
 			content.Name = r.Name
 			mutex.Unlock()
+			break
 		case "houselevel":
 			var r types.BioData
 			table := cfg.Loader().HouseLevelTable
@@ -104,6 +104,7 @@ func sentimentsFetcherFromFilterTitle(f []string, n types.LevelType) *types.Cont
 			content.Title = strings.ToUpper(r.Position)
 			content.Name = r.Name
 			mutex.Unlock()
+			break
 		case "subgovlevel":
 			var r types.BioData
 			table := cfg.Loader().SubGovLevelTable
@@ -118,6 +119,7 @@ func sentimentsFetcherFromFilterTitle(f []string, n types.LevelType) *types.Cont
 			content.Title = strings.ToUpper(r.Position)
 			content.Name = r.Name
 			mutex.Unlock()
+			break
 		case "grasslevel":
 			var r types.BioData
 			table := cfg.Loader().GrassRootLevelTable
@@ -132,6 +134,7 @@ func sentimentsFetcherFromFilterTitle(f []string, n types.LevelType) *types.Cont
 			content.Title = strings.ToUpper(r.Position)
 			content.Name = r.Name
 			mutex.Unlock()
+			break
 		}
 	}()
 	go func() {
@@ -149,7 +152,9 @@ func sentimentsFetcherFromFilterTitle(f []string, n types.LevelType) *types.Cont
 					report.ErrLogger(err)
 					field := make(map[string]string)
 					field[f[0]] = f0
+					mutex.Lock()
 					content.Data = append(content.Data, field)
+					mutex.Unlock()
 				}
 			}
 			break
@@ -167,7 +172,9 @@ func sentimentsFetcherFromFilterTitle(f []string, n types.LevelType) *types.Cont
 					field := make(map[string]string)
 					field[f[0]] = f0
 					field[f[1]] = f1
+					mutex.Lock()
 					content.Data = append(content.Data, field)
+					mutex.Unlock()
 				}
 			}
 			break
@@ -187,7 +194,9 @@ func sentimentsFetcherFromFilterTitle(f []string, n types.LevelType) *types.Cont
 					field[f[0]] = f0
 					field[f[1]] = f1
 					field[f[2]] = f2
+					mutex.Lock()
 					content.Data = append(content.Data, field)
+					mutex.Unlock()
 				}
 			}
 			break
@@ -209,7 +218,9 @@ func sentimentsFetcherFromFilterTitle(f []string, n types.LevelType) *types.Cont
 					field[f[1]] = f1
 					field[f[2]] = f2
 					field[f[3]] = f3
+					mutex.Lock()
 					content.Data = append(content.Data, field)
+					mutex.Unlock()
 				}
 			}
 			break
@@ -233,7 +244,9 @@ func sentimentsFetcherFromFilterTitle(f []string, n types.LevelType) *types.Cont
 					field[f[2]] = f2
 					field[f[3]] = f3
 					field[f[4]] = f4
+					mutex.Lock()
 					content.Data = append(content.Data, field)
+					mutex.Unlock()
 				}
 			}
 			break
@@ -259,7 +272,9 @@ func sentimentsFetcherFromFilterTitle(f []string, n types.LevelType) *types.Cont
 					field[f[3]] = f3
 					field[f[4]] = f4
 					field[f[5]] = f5
+					mutex.Lock()
 					content.Data = append(content.Data, field)
+					mutex.Unlock()
 				}
 			}
 			break
@@ -287,7 +302,9 @@ func sentimentsFetcherFromFilterTitle(f []string, n types.LevelType) *types.Cont
 					field[f[4]] = f4
 					field[f[5]] = f5
 					field[f[6]] = f6
+					mutex.Lock()
 					content.Data = append(content.Data, field)
+					mutex.Unlock()
 				}
 			}
 			break
@@ -317,7 +334,9 @@ func sentimentsFetcherFromFilterTitle(f []string, n types.LevelType) *types.Cont
 					field[f[5]] = f5
 					field[f[6]] = f6
 					field[f[7]] = f7
+					mutex.Lock()
 					content.Data = append(content.Data, field)
+					mutex.Unlock()
 				}
 			}
 			break
@@ -349,7 +368,9 @@ func sentimentsFetcherFromFilterTitle(f []string, n types.LevelType) *types.Cont
 					field[f[6]] = f6
 					field[f[7]] = f7
 					field[f[8]] = f8
+					mutex.Lock()
 					content.Data = append(content.Data, field)
+					mutex.Unlock()
 				}
 			}
 			break
@@ -383,7 +404,9 @@ func sentimentsFetcherFromFilterTitle(f []string, n types.LevelType) *types.Cont
 					field[f[7]] = f7
 					field[f[8]] = f8
 					field[f[9]] = f9
+					mutex.Lock()
 					content.Data = append(content.Data, field)
+					mutex.Unlock()
 				}
 			}
 			break

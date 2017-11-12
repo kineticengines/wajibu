@@ -30,6 +30,7 @@ import (
 	"strconv"
 
 	cfg "github.com/daviddexter/wajibu/configure"
+	"github.com/daviddexter/wajibu/handlers/types"
 	"github.com/daviddexter/wajibu/report"
 	"github.com/fatih/structs"
 	"github.com/mediocregopher/radix.v2/pool"
@@ -42,6 +43,8 @@ var (
 	levels     []string
 	dataLevels map[string]string
 )
+
+type levelsRes = types.LevelsRes
 
 const (
 	ConfigKey  string = "config"
@@ -57,17 +60,17 @@ const (
 	BuildFourData  string = "build:four:data"
 	BuildFiveData  string = "build:five:data"
 
-	PILLARS              string = "pillars"          //key to a set
-	TITLES               string = "titles"           //key to a set
-	HOUSES               string = "houses"           //key to a set
-	SUBGOVS              string = "subgovs"          //key to a set
-	SENTIMENT            string = "sentiments:field" //key to a set
-	SENTIMENT_KEY_PREFIX string = "sentiment:key"    //key to a set
-	SENTIMENT_LIST       string = "sentiment:list"   //key to a list
-	CACHEDSEARCH         string = "cached:search"
+	PILLARS            string = "pillars"          //key to a set
+	TITLES             string = "titles"           //key to a set
+	HOUSES             string = "houses"           //key to a set
+	SUBGOVS            string = "subgovs"          //key to a set
+	SENTIMENT          string = "sentiments:field" //key to a set
+	SENTIMENTKEYPREFIX string = "sentiment:key"    //key to a set
+	SENTIMENTLIST      string = "sentiment:list"   //key to a list
+	CACHEDSEARCH       string = "cached:search"
 )
 
-//Common in all builds is a `complete` field which by default of false
+//Common in all builds is a `complete` field which by default is false
 
 func init() {
 	keyMap = make(map[string]string)
@@ -114,16 +117,9 @@ func DeployChecker() *bool {
 	return &b
 }
 
-type LevelsRes struct {
-	Level    string      `json:level`
-	Complete bool        `json:complete,omitempty`
-	Exist    bool        `json:exist`
-	Data     interface{} `json:data,omitempty`
-}
-
-func FetchBuildLevel() []LevelsRes {
-	build := make([]LevelsRes, 0)
-	lvRes := make(chan LevelsRes)
+func FetchBuildLevel() []levelsRes {
+	build := make([]levelsRes, 0)
+	lvRes := make(chan levelsRes)
 
 	for _, v := range levels {
 		go checkBuild(lvRes, v)
@@ -142,12 +138,12 @@ func FetchBuildLevel() []LevelsRes {
 
 }
 
-func checkBuild(lRes chan<- LevelsRes, level string) {
+func checkBuild(lRes chan<- levelsRes, level string) {
 	//check if build exists and if is complete.
 	//Return false if build one does not exist.
 	//if exists,check if is complete.
 	//check if data exists and retrieve
-	data := LevelsRes{}
+	data := levelsRes{}
 	data.Level = level
 	conn, err := RDB.Get()
 	report.ErrLogger(err)
@@ -296,7 +292,7 @@ func HousesCompleteness() bool {
 	}
 	if size == t {
 		return true
-	} else {
-		return false
 	}
+	return false
+
 }

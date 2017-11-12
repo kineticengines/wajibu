@@ -134,7 +134,7 @@ func CreateDefaultCred(w http.ResponseWriter, r *http.Request) {
 	mg := mailgun.NewMailgun(cfg.Loader().MailGunDomain, cfg.Loader().MailGunAPIKey, cfg.Loader().MailGunPublic)
 	msg := mailgun.NewMessage(
 		"wajibu@wajibu.com",
-		"Administrator Default Credentials",
+		"No-reply - Administrator Default Credentials",
 		"Setting up Wajibu Default Administrator Credentials",
 		toEmail)
 	msg.SetHtml(HTMLtoSend)
@@ -188,7 +188,7 @@ func CheckLoginCredsThenLogin(w http.ResponseWriter, r *http.Request) {
 }
 
 type BuildRes struct {
-	Levels []radix.LevelsRes `json:"levels"`
+	Levels []types.LevelsRes `json:"levels"`
 }
 
 func CheckBuildLevel(w http.ResponseWriter, r *http.Request) {

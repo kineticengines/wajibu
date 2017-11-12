@@ -144,6 +144,7 @@ func HouseLevelConfigure(w http.ResponseWriter, r *http.Request) {
 
 func SubGovLevelConfigure(w http.ResponseWriter, r *http.Request) {
 	var data struct{ GovName string }
+
 	err := json.NewDecoder(r.Body).Decode(&data)
 	report.ErrLogger(err)
 	d := subGovLevelConfigurer(data)

@@ -27,6 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package dbase
 
 import (
+	"log"
 	"sync"
 	tmpl "text/template"
 
@@ -38,6 +39,7 @@ import (
 func GetSentimentForPillar(item string, v []string) *types.ContentDataAll {
 	var rALL types.ContentDataAll
 	n := *sentimentsFetcherFromFilterPillar(v, tmpl.JSEscapeString(tmpl.HTMLEscapeString(item)))
+	log.Println(n)
 
 	switch len(n.Data) {
 	case 0:
@@ -133,15 +135,15 @@ func GetSentimentForPillar(item string, v []string) *types.ContentDataAll {
 			}()
 			wg.Wait()
 			bios = append(bios, r)
-			//var newContent types.ContentData
-			//newContent.Name = r.Name
-			//newContent.Title = r.Position
-			//newContent.Data = n.Data
+			var newContent types.ContentData
+			newContent.Name = r.Name
+			newContent.Title = r.Position
+			newContent.Data = n.Data
 			//dataForWhichAPI(r, n.Data)
 
-			//rALL.Content = append(rALL.Content, newContent)
+			rALL.Content = append(rALL.Content, newContent)
 		}
-		dataForWhichAPI(bios, n.Data)
+		//dataForWhichAPI(bios, n.Data)
 	}
 	return &rALL
 }

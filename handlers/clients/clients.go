@@ -54,9 +54,10 @@ func FilterByQuery(w http.ResponseWriter, r *http.Request) {
 	}
 	err := json.NewDecoder(r.Body).Decode(&data)
 	report.ErrLogger(err)
+
 	n, fc := determineTheQueryType(tmpl.JSEscapeString(tmpl.HTMLEscapeString(data.Item)))
 
-	if *fc == true { // means no match was found.Status should be false
+	if *fc == true { // true means no match was found.Status should be false
 		res, err := json.Marshal(struct {
 			Status bool `json:"status"`
 		}{Status: !*fc})

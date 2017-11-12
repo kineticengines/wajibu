@@ -26,6 +26,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package types
 
+type LevelsRes struct {
+	Level    string      `json:"level"`
+	Complete bool        `json:"complete,omitempty"`
+	Exist    bool        `json:"exist"`
+	Data     interface{} `json:"data,omitempty"`
+}
+
 type BuildOneMain struct {
 	Deployname         string `json:"deployname"`
 	Deploycountry      string `json:"deploycountry"`
