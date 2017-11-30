@@ -55,7 +55,7 @@ export class RootComponent implements OnInit {
   }
 
   private startDeployChecker(){
-    this.initializer.getInit().subscribe(d => {      
+    this.initializer.getInit().subscribe(d => {     
       if(d.Deployed === false){
         this.notDeployed = true
         this.subscribeToDeployCheck()

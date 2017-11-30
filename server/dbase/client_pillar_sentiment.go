@@ -27,7 +27,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package dbase
 
 import (
-	"log"
 	"sync"
 	tmpl "text/template"
 
@@ -39,16 +38,22 @@ import (
 func GetSentimentForPillar(item string, v []string) *types.ContentDataAll {
 	var rALL types.ContentDataAll
 	n := *sentimentsFetcherFromFilterPillar(v, tmpl.JSEscapeString(tmpl.HTMLEscapeString(item)))
-	log.Println(n)
 
 	switch len(n.Data) {
 	case 0:
 		rALL.Length = 0
 	default:
 		rALL.Length = len(n.Data)
-		var bios []types.BioData
+		//var bios []types.BioData
+
+		allAPIs := make(map[string]string)
+		//get distinct apis
 		for _, val := range n.Data {
-			api := val["api"]
+			allAPIs[val["api"]] = val["api"]
+		}
+
+		//for each api get its data
+		for _, api := range allAPIs {
 			var wg sync.WaitGroup
 			wg.Add(4)
 			var mutex sync.Mutex
@@ -134,21 +139,28 @@ func GetSentimentForPillar(item string, v []string) *types.ContentDataAll {
 				}
 			}()
 			wg.Wait()
-			bios = append(bios, r)
 			var newContent types.ContentData
 			newContent.Name = r.Name
 			newContent.Title = r.Position
-			newContent.Data = n.Data
-			//dataForWhichAPI(r, n.Data)
-
+			newContent.Data = *dataContentForThisAPI(api, n.Data)
 			rALL.Content = append(rALL.Content, newContent)
 		}
-		//dataForWhichAPI(bios, n.Data)
 	}
 	return &rALL
 }
 
+func dataContentForThisAPI(api string, data []map[string]string) *[]map[string]string {
+	var r []map[string]string
+	for i := range data {
+		if data[i]["api"] == api {
+			r = append(r, data[i])
+		}
+	}
+	return &r
+}
+
 func sentimentsFetcherFromFilterPillar(f []string, item string) *types.ContentData {
+
 	var content types.ContentData
 	var wg sync.WaitGroup
 	wg.Add(1)
