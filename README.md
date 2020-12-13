@@ -9,5 +9,5 @@ It should serve as a reference on the general atmosphere and mood in the country
 ## Notice
 
 This is the second version of a similar effort with relatively different mode of operation.
-If interested in the genesis of *WAJIBU* project go to the _legacy_ directory
+If interested in the genesis of *WAJIBU* project go to the [legacy directory](/legacy)
 
